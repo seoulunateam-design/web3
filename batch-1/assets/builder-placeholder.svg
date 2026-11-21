@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Box photo placeholder">
+  <rect width="800" height="600" fill="#3a2338"/>
+  <rect x="40" y="40" width="720" height="520" rx="28" fill="none" stroke="#C6A36B" stroke-width="2" stroke-dasharray="10 10" opacity=".7"/>
+  <text x="400" y="290" text-anchor="middle" font-family="Georgia, serif" font-size="30" fill="#EADCF5" opacity=".85">Box photo placeholder</text>
+  <text x="400" y="334" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#EADCF5" opacity=".6">Add the open-box image to this box in Shopify admin</text>
+</svg>
