@@ -1,0 +1,36 @@
+{%- comment -%}
+  Prints the photo tiles for a looping photo strip (the photo reel and the feedback strip).
+  Uses the section's "photo" blocks when there are any, otherwise the 34 photos bundled in assets/ (reel-01.jpg ... reel-34.jpg).
+  Accepts: section, parity (0 or 1: which half of the bundled photos to use; leave empty for all), shift (true: start from the second half),
+           class (tile class), lazy (true/false)
+  The caller wraps the output in a track and prints it twice for a seamless loop.
+{%- endcomment -%}
+{%- assign has_blocks = false -%}
+{%- for block in section.blocks -%}{%- if block.type == 'photo' and block.settings.image != blank -%}{%- assign has_blocks = true -%}{%- endif -%}{%- endfor -%}
+{%- if has_blocks -%}
+  {%- assign n = 0 -%}
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'photo' and block.settings.image != blank -%}
+      {%- assign m = n | modulo: 2 -%}
+      {%- if parity == blank or m == parity -%}
+        <figure class="{{ class }}" {{ block.shopify_attributes }}>{{ block.settings.image | image_url: width: 500 | image_tag: loading: 'lazy', widths: '250, 400, 500', sizes: '260px', alt: block.settings.image.alt | default: '' }}</figure>
+      {%- endif -%}
+      {%- assign n = n | plus: 1 -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- else -%}
+  {%- for i in (1..34) -%}
+    {%- assign idx = i | minus: 1 -%}
+    {%- if shift -%}
+      {%- assign pos = idx | plus: 17 | modulo: 34 -%}
+    {%- else -%}
+      {%- assign pos = idx -%}
+    {%- endif -%}
+    {%- assign m = idx | modulo: 2 -%}
+    {%- if parity == blank or m == parity -%}
+      {%- assign num = pos | plus: 1 | prepend: '0' | slice: -2, 2 -%}
+      {%- assign file = 'reel-' | append: num | append: '.jpg' -%}
+      <figure class="{{ class }}"><img src="{{ file | asset_url }}" alt="" width="400" height="500" loading="lazy" decoding="async"></figure>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}

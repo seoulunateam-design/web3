@@ -1,0 +1,21 @@
+{%- comment -%}
+  Footer contact details and social links. Everything comes from the footer settings; nothing is shown unless you fill it in.
+  Accepts: section (the footer section)
+{%- endcomment -%}
+{%- assign s = section.settings -%}
+{%- if s.contact_email != blank or s.contact_phone != blank or s.contact_hours != blank -%}
+  <address class="fcontact">
+    {%- if s.contact_email != blank -%}<a href="mailto:{{ s.contact_email }}">{{ s.contact_email }}</a>{%- endif -%}
+    {%- if s.contact_phone != blank -%}<a href="tel:{{ s.contact_phone | remove: ' ' }}">{{ s.contact_phone }}</a>{%- endif -%}
+    {%- if s.contact_hours != blank -%}<span>{{ s.contact_hours }}</span>{%- endif -%}
+  </address>
+{%- endif -%}
+{%- if s.instagram_url != blank or s.facebook_url != blank or s.pinterest_url != blank or s.youtube_url != blank or s.tiktok_url != blank -%}
+  <p class="fsocial">
+    {%- if s.instagram_url != blank -%}<a href="{{ s.instagram_url }}" rel="noopener" target="_blank">Instagram</a>{%- endif -%}
+    {%- if s.facebook_url != blank -%}<a href="{{ s.facebook_url }}" rel="noopener" target="_blank">Facebook</a>{%- endif -%}
+    {%- if s.pinterest_url != blank -%}<a href="{{ s.pinterest_url }}" rel="noopener" target="_blank">Pinterest</a>{%- endif -%}
+    {%- if s.youtube_url != blank -%}<a href="{{ s.youtube_url }}" rel="noopener" target="_blank">YouTube</a>{%- endif -%}
+    {%- if s.tiktok_url != blank -%}<a href="{{ s.tiktok_url }}" rel="noopener" target="_blank">TikTok</a>{%- endif -%}
+  </p>
+{%- endif -%}

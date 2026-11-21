@@ -1,0 +1,9 @@
+{%- comment -%}
+  Keeps only the collections that exist and contain products (a deleted or empty collection must never break the home page).
+  Accepts: handles (comma separated). Prints the valid handles, comma separated, no whitespace.
+{%- endcomment -%}
+{%- assign handle_candidates = handles | split: ',' -%}
+{%- for h in handle_candidates -%}
+  {%- assign candidate = collections[h] -%}
+  {%- if candidate != blank and candidate.products_count > 0 -%}{{- h -}},{%- endif -%}
+{%- endfor -%}

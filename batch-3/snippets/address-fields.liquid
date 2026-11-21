@@ -1,0 +1,15 @@
+{% comment %}
+  Address form fields.
+  Accepts: address (required), form_id (required, used to make element IDs unique)
+{% endcomment %}
+<label>FIRST NAME<input type="text" name="address[first_name]" value="{{ address.first_name }}" autocomplete="given-name"></label>
+<label>LAST NAME<input type="text" name="address[last_name]" value="{{ address.last_name }}" autocomplete="family-name"></label>
+<label>PHONE<input type="tel" name="address[phone]" value="{{ address.phone }}" autocomplete="tel"></label>
+<label>ADDRESS LINE 1<input type="text" name="address[address1]" value="{{ address.address1 }}" autocomplete="address-line1"></label>
+<label>ADDRESS LINE 2<input type="text" name="address[address2]" value="{{ address.address2 }}" autocomplete="address-line2"></label>
+<label>CITY<input type="text" name="address[city]" value="{{ address.city }}" autocomplete="address-level2"></label>
+<label>COUNTRY
+  <select name="address[country]" id="AddressCountry_{{ form_id }}" data-selected="{{ address.country }}" autocomplete="country-name">{{ all_country_option_tags }}</select>
+</label>
+<label>STATE / PROVINCE<input type="text" name="address[province]" value="{{ address.province }}" autocomplete="address-level1"></label>
+<label>PIN / ZIP CODE<input type="text" name="address[zip]" value="{{ address.zip }}" autocomplete="postal-code"></label>

@@ -1,0 +1,82 @@
+{%- comment -%}
+  The pieces: every accessory sold on its own. Real Shopify products, prices and stock.
+  Pick a collection in the section settings (e.g. one called "Accessories"); without a choice it uses the collection with the handle "accessories".
+  The filter buttons are built from each product's Type (Earrings, Bracelet, Ring...). Single-variant products can be added straight to the bag.
+{%- endcomment -%}
+{%- liquid
+  assign src = section.settings.collection
+  if src == blank
+    assign src = collections['accessories']
+  endif
+  assign types = ''
+  if src != blank
+    for product in src.products
+      unless types contains product.type
+        assign types = types | append: product.type | append: '||'
+      endunless
+    endfor
+  endif
+  assign type_list = types | split: '||'
+-%}
+{%- if src != blank and src.products_count > 0 -%}
+<section class="pc" id="pieces" {{ section.shopify_attributes }}>
+  <p class="pc__kicker">{{ section.settings.kicker }}</p>
+  <h2>{{ section.settings.heading }}</h2>
+  {%- if section.settings.lede != blank -%}<p class="pc__lede">{{ section.settings.lede }}</p>{%- endif -%}
+  {%- if type_list.size > 1 -%}
+    <div class="pc__chips" role="group" aria-label="{{ section.settings.heading | escape }}">
+      <button type="button" class="pc__chip on" data-pieces-filter="all">{{ section.settings.all_label }} <small>{{ src.products_count }}</small></button>
+      {%- for t in type_list -%}
+        {%- if t != blank -%}<button type="button" class="pc__chip" data-pieces-filter="{{ t | handle }}">{{ t }}</button>{%- endif -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+  <div class="pc__grid" data-pieces-grid>
+    {%- for product in src.products limit: section.settings.limit -%}
+      <figure class="pc__item" data-type="{{ product.type | handle }}">
+        <a href="{{ product.url }}" class="pc__img" tabindex="-1" aria-hidden="true">
+          {%- if product.featured_image -%}
+            {{ product.featured_image | image_url: width: 420 | image_tag: loading: 'lazy', widths: '210, 320, 420', sizes: '(min-width: 861px) 200px, 46vw', alt: product.featured_image.alt | default: product.title }}
+          {%- else -%}
+            {{ 'product-1' | placeholder_svg_tag }}
+          {%- endif -%}
+        </a>
+        <figcaption>
+          <a href="{{ product.url }}"><b>{{ product.title }}</b></a>
+          <span>{% render 'price', product: product, from: product.price_varies %}</span>
+          {%- if product.available == false -%}
+            <button type="button" class="pc__add" disabled>{{ 'product.sold_out' | t }}</button>
+          {%- elsif product.variants.size == 1 -%}
+            <button type="button" class="pc__add" data-add data-variant-id="{{ product.selected_or_first_available_variant.id }}" data-product-title="{{ product.title | escape }}">{{ 'product.add_to_cart' | t }}</button>
+          {%- else -%}
+            <a class="pc__add" href="{{ product.url }}">{{ section.settings.choose_label }}</a>
+          {%- endif -%}
+        </figcaption>
+      </figure>
+    {%- endfor -%}
+  </div>
+  {%- if section.settings.button_label != blank -%}
+    <p class="pc__more"><a class="btn btn--plum" href="{{ section.settings.button_url | default: '/pages/create-your-own-box' }}">{{ section.settings.button_label }}</a></p>
+  {%- endif -%}
+</section>
+{%- elsif request.design_mode -%}
+  <p class="editor-hint">The pieces: create a collection called "Accessories" (handle: accessories) with your individual products, or choose a collection here.</p>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "The pieces",
+  "settings": [
+    { "type": "collection", "id": "collection", "label": "Collection", "info": "Leave empty to use the collection with the handle 'accessories'." },
+    { "type": "text", "id": "kicker", "label": "Small heading", "default": "THE PIECES" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Every accessory, one by one" },
+    { "type": "text", "id": "lede", "label": "Intro text", "default": "Buy any accessory on its own, or get 6 in a reusable pouch with a collection." },
+    { "type": "text", "id": "all_label", "label": "'All' filter label", "default": "All" },
+    { "type": "text", "id": "choose_label", "label": "Button for products with options", "default": "CHOOSE OPTIONS" },
+    { "type": "range", "id": "limit", "label": "Maximum products", "min": 12, "max": 96, "step": 6, "default": 96 },
+    { "type": "text", "id": "button_label", "label": "Button text", "default": "BUILD YOUR OWN BOX", "info": "Leave empty to hide." },
+    { "type": "text", "id": "button_url", "label": "Button link", "default": "/pages/create-your-own-box" }
+  ],
+  "presets": [{ "name": "The pieces" }]
+}
+{% endschema %}

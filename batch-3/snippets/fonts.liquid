@@ -1,0 +1,12 @@
+{%- comment -%}
+  Fonts bundled in the theme's assets folder (Aeonik for headings/body, Inter for digits and the ₹ sign).
+  Aeonik is a licensed typeface: keep the files only if your licence covers web use on this store.
+  No third-party font service is used; system serif / sans-serif fonts are the fallbacks.
+{%- endcomment -%}
+{{ 'Aeonik-Regular.ttf' | asset_url | preload_tag: as: 'font', type: 'font/ttf', crossorigin: '' }}
+<style>
+  @font-face { font-family: "Digits"; font-weight: 400 700; font-display: swap; src: url({{ 'inter-latin.woff2' | asset_url }}) format("woff2"); unicode-range: U+0030-0039; }
+  @font-face { font-family: "Digits"; font-weight: 400 700; font-display: swap; src: url({{ 'inter-latin-ext.woff2' | asset_url }}) format("woff2"); unicode-range: U+20B9; }
+  @font-face { font-family: "Aeonik"; font-weight: 400 500; font-style: normal; font-display: swap; src: url({{ 'Aeonik-Regular.ttf' | asset_url }}) format("truetype"); }
+  @font-face { font-family: "Aeonik"; font-weight: 600 800; font-style: normal; font-display: swap; src: url({{ 'Aeonik-Bold.ttf' | asset_url }}) format("truetype"); }
+</style>

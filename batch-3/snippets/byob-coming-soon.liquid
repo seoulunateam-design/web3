@@ -1,0 +1,29 @@
+{%- comment -%}
+  "Build Your Own Box" Coming Soon panel. No cart, checkout or form action. Used by the home page teaser and by the builder page
+  while purchasing is switched off.
+  Accepts: heading, subheading, badge, text, image_1, image_2, image_3 (optional image_picker values), link_url, link_label (optional)
+  Without pictures it shows the three box photographs bundled in assets/ (Hot Pink, Black, Light Pink).
+{%- endcomment -%}
+<div class="byobt" data-reveal>
+  <div class="byobt__copy">
+    <span class="byobt__badge">{{ badge | default: 'COMING SOON' }}</span>
+    <h2>{{ heading | default: 'BUILD YOUR OWN BOX' }}</h2>
+    <p class="byobt__sub">{{ subheading | default: 'Your favourites. Your style. Your own little world.' }}</p>
+    <p class="byobt__text">{{ text | default: 'A personalised accessory experience is coming to SEOULUNA. Choose your favourite pieces and create a box that reflects your style.' }}</p>
+    {%- if link_url != blank and link_label != blank -%}<a class="btn btn--ghost" href="{{ link_url }}">{{ link_label }}</a>{%- endif -%}
+  </div>
+  <div class="byobt__art" aria-hidden="true">
+    <figure class="byobt__img byobt__img--a">
+      {%- if image_1 != blank -%}{{ image_1 | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 500, 700', sizes: '(min-width: 861px) 260px, 60vw', alt: '' }}
+      {%- else -%}<img src="{{ 'box-hotpink.jpg' | asset_url }}" alt="" width="400" height="500" loading="lazy" decoding="async">{%- endif -%}
+    </figure>
+    <figure class="byobt__img byobt__img--b">
+      {%- if image_2 != blank -%}{{ image_2 | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 500, 700', sizes: '(min-width: 861px) 220px, 46vw', alt: '' }}
+      {%- else -%}<img src="{{ 'box-black.jpg' | asset_url }}" alt="" width="400" height="500" loading="lazy" decoding="async">{%- endif -%}
+    </figure>
+    <figure class="byobt__img byobt__img--c">
+      {%- if image_3 != blank -%}{{ image_3 | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 500, 700', sizes: '(min-width: 861px) 200px, 40vw', alt: '' }}
+      {%- else -%}<img src="{{ 'box-lightpink.jpg' | asset_url }}" alt="" width="400" height="500" loading="lazy" decoding="async">{%- endif -%}
+    </figure>
+  </div>
+</div>

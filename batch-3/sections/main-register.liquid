@@ -1,0 +1,20 @@
+<section class="shop-page auth-page" {{ section.shopify_attributes }}>
+  <div class="auth-card">
+    <h1>Create account</h1>
+    {%- form 'create_customer', novalidate: 'novalidate' -%}
+      {%- if form.errors -%}<p class="form-err" role="alert">{{ form.errors | default_errors }}</p>{%- endif -%}
+      <label>FIRST NAME<input type="text" name="customer[first_name]" autocomplete="given-name"></label>
+      <label>LAST NAME<input type="text" name="customer[last_name]" autocomplete="family-name"></label>
+      <label>EMAIL<input type="email" name="customer[email]" autocomplete="email" required></label>
+      <label>PASSWORD<input type="password" name="customer[password]" autocomplete="new-password" required></label>
+      <button class="btn btn--plum btn--block" type="submit">CREATE ACCOUNT</button>
+    {%- endform -%}
+    <p class="auth-links"><a href="{{ routes.account_login_url }}">Already have an account? Sign in</a></p>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Register"
+}
+{% endschema %}

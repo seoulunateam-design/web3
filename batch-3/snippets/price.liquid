@@ -1,0 +1,13 @@
+{% comment %}
+  Renders a product price.
+  Accepts: product (required), from (boolean: prefix "From" when true)
+{% endcomment %}
+{%- assign p = product -%}
+<span class="price">
+  {%- if from %}<small class="price__from">From</small> {% endif -%}
+  {%- if p.compare_at_price > p.price and p.available -%}
+    <s class="price__was">{{ p.compare_at_price | money }}</s> <span class="price__now">{{ p.price | money }}</span>
+  {%- else -%}
+    <span class="price__now">{{ p.price | money }}</span>
+  {%- endif -%}
+</span>

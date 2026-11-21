@@ -1,0 +1,11 @@
+{%- comment -%}
+  Fallback when a section has no collection blocks: print the handles of the first
+  three non-empty collections, comma separated (no whitespace).
+{%- endcomment -%}
+{%- assign shown = 0 -%}
+{%- for c in collections -%}
+  {%- if shown < 3 and c.products_count > 0 and c.handle != 'frontpage' -%}
+    {{- c.handle -}},
+    {%- assign shown = shown | plus: 1 -%}
+  {%- endif -%}
+{%- endfor -%}

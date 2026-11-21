@@ -1,0 +1,53 @@
+<section class="shop-page cart-page" {{ section.shopify_attributes }}>
+  <header class="shop-head"><h1>{{ 'cart.title' | t }}</h1></header>
+  {%- if cart.item_count == 0 -%}
+    <div class="kbag-empty"><img class="kbag__mascot" src="{{ 'mascot.png' | asset_url }}" alt="" width="200" height="173" loading="lazy"><p class="ov__empty">{{ 'cart.empty' | t }}</p>
+      <a class="btn btn--plum" href="{{ routes.all_products_collection_url }}">{{ 'general.continue_shopping' | t }}</a></div>
+  {%- else -%}
+    <form action="{{ routes.cart_url }}" method="post" id="cartForm" class="cart-form">
+      <div class="lines">
+        {%- for item in cart.items -%}
+          {%- assign line_alt = item.image.alt | default: item.product.title -%}
+          <div class="line">
+            {%- if item.image -%}{{ item.image | image_url: width: 160 | image_tag: width: 76, height: 76, alt: line_alt, loading: 'lazy' }}{%- else -%}<span></span>{%- endif -%}
+            <div>
+              <b><a href="{{ item.url }}">{{ item.product.title }}</a></b>
+              {%- unless item.product.has_only_default_variant -%}<small>{{ item.variant.title }}</small>{%- endunless -%}
+              <small>{{ item.final_price | money }}{% if item.original_price > item.final_price %} <s>{{ item.original_price | money }}</s>{% endif %}</small>
+              {%- for discount in item.line_level_discount_allocations -%}<small class="line__disc">{{ discount.discount_application.title }}</small>{%- endfor -%}
+              {%- render 'cart-properties', item: item -%}
+              <label class="qty qty--field">
+                <span class="visually-hidden">{{ 'product.quantity' | t }}</span>
+                <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" max="99" aria-label="{{ 'product.quantity' | t }}">
+              </label>
+            </div>
+            <div class="line__r">
+              <b>{{ item.final_line_price | money }}</b>
+              <a class="link" href="{{ item.url_to_remove }}">{{ 'cart.remove' | t }}</a>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+      <div class="cart-side">
+        <label class="cart-note">ORDER NOTE<textarea name="note" rows="3">{{ cart.note }}</textarea></label>
+        <div class="tot">
+          {%- if cart.cart_level_discount_applications.size > 0 -%}
+            {%- for discount in cart.cart_level_discount_applications -%}
+              <div><span>{{ discount.title }}</span><b>-{{ discount.total_allocated_amount | money }}</b></div>
+            {%- endfor -%}
+          {%- endif -%}
+          <div class="tot__final"><span>{{ 'cart.subtotal' | t }}</span><b>{{ cart.total_price | money }}</b></div>
+          <p class="tot__note">{{ 'cart.note' | t }}</p>
+        </div>
+        <button class="btn btn--ghost btn--block" type="submit" name="update">UPDATE BAG</button>
+        <button class="btn btn--plum btn--block" type="submit" name="checkout">{{ 'cart.checkout' | t }}</button>
+      </div>
+    </form>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Cart page"
+}
+{% endschema %}

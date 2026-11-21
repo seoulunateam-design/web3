@@ -1,0 +1,53 @@
+{%- comment -%}
+  Intro band ("Little details. Big personality."): headline, rotating model photos, two short texts and the tilted SEOULUNA strap.
+  Upload up to three photos; without uploads the bundled model photos are used.
+{%- endcomment -%}
+<section class="quality" {{ section.shopify_attributes }}>
+  <h2 data-reveal>{{ section.settings.line_1 }}{% if section.settings.line_2 != blank %}<br><span>{{ section.settings.line_2 }}</span>{% endif %}</h2>
+  <div class="quality__cup quality__cup--model faces" id="faces" data-parallax="-.12">
+    {%- assign shown = 0 -%}
+    {%- for i in (1..3) -%}
+      {%- assign key = 'image_' | append: i -%}
+      {%- assign img = section.settings[key] -%}
+      {%- if img != blank -%}
+        {%- if shown == 0 -%}{%- assign face_class = 'on' -%}{%- else -%}{%- assign face_class = '' -%}{%- endif -%}
+        {{ img | image_url: width: 840 | image_tag: class: face_class, loading: 'lazy', widths: '420, 640, 840', sizes: '420px', width: 420, height: 420, alt: img.alt | default: section.settings.default_alt }}
+        {%- assign shown = shown | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if shown == 0 -%}
+      <img class="on" src="{{ 'model-gold.webp' | asset_url }}" alt="{{ section.settings.default_alt | escape }}" width="420" height="420" loading="lazy">
+      <img src="{{ 'model-pop.webp' | asset_url }}" alt="{{ section.settings.default_alt | escape }}" width="420" height="420" loading="lazy">
+      <img src="{{ 'model-street.webp' | asset_url }}" alt="{{ section.settings.default_alt | escape }}" width="420" height="420" loading="lazy">
+    {%- endif -%}
+  </div>
+  <svg class="deco q1" data-parallax=".1" aria-hidden="true"><use href="#crescent"/></svg>
+  <svg class="deco q2" data-parallax="-.08" aria-hidden="true"><use href="#crescent"/></svg>
+  <svg class="spark s4" aria-hidden="true"><use href="#spark"/></svg>
+  <svg class="spark s5" aria-hidden="true"><use href="#spark"/></svg>
+  {%- if section.settings.text_left != blank -%}<p class="quality__l" data-reveal="left">{{ section.settings.text_left }}</p>{%- endif -%}
+  {%- if section.settings.text_right != blank -%}<p class="quality__r" data-reveal="right">{{ section.settings.text_right }}</p>{%- endif -%}
+  {%- if section.settings.ribbon_text != blank -%}
+    <div class="ribbon" aria-hidden="true"><div class="ribbon__track">
+      {%- for i in (1..8) -%}<span>{{ section.settings.ribbon_text }} ✦</span>{%- endfor -%}
+    </div></div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Intro band",
+  "settings": [
+    { "type": "text", "id": "line_1", "label": "Heading line 1", "default": "LITTLE DETAILS." },
+    { "type": "text", "id": "line_2", "label": "Heading line 2", "default": "BIG PERSONALITY." },
+    { "type": "image_picker", "id": "image_1", "label": "Model photo 1", "info": "Photos swap every few seconds. Transparent PNGs work best." },
+    { "type": "image_picker", "id": "image_2", "label": "Model photo 2" },
+    { "type": "image_picker", "id": "image_3", "label": "Model photo 3" },
+    { "type": "text", "id": "default_alt", "label": "Alt text for the bundled photos", "default": "Model wearing SEOULUNA accessories" },
+    { "type": "textarea", "id": "text_left", "label": "Left text", "default": "At SEOULUNA, we believe accessories are more than just finishing touches. They're little expressions of who you are. Every pouch brings together six coordinated accessories." },
+    { "type": "textarea", "id": "text_right", "label": "Right text", "default": "Accessories for every mood, curated in one pouch. Designed to make every moment feel a little more special." },
+    { "type": "text", "id": "ribbon_text", "label": "Strap text", "default": "SEOULUNA" }
+  ],
+  "presets": [{ "name": "Intro band" }]
+}
+{% endschema %}

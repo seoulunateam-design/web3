@@ -1,0 +1,121 @@
+{%- comment -%}
+  Hero. Each block points at a collection and the hero cycles through them.
+  With no blocks it uses the first three collections that contain products.
+  Product names, descriptions, prices and images all come from Shopify.
+{%- endcomment -%}
+{%- capture handles -%}
+  {%- for block in section.blocks -%}
+    {%- if block.settings.collection != blank -%}{{- block.settings.collection.handle -}},{%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+{%- capture handles -%}{%- render 'valid-handles', handles: handles -%}{%- endcapture -%}
+{%- if handles == blank -%}
+  {%- capture handles -%}{%- render 'collection-handles' -%}{%- endcapture -%}
+{%- endif -%}
+{%- assign handle_list = handles | split: ',' -%}
+{%- assign first = collections[handle_list[0]] -%}
+{%- assign first_cheapest = first.products | sort: 'price' | first -%}
+{%- assign first_img = first.image | default: first_cheapest.featured_image -%}
+{%- assign first_lead = first.products | first -%}
+
+{%- render 'collection-data', handles: handles, section: section -%}
+
+<section class="hero hero2" id="home" {{ section.shopify_attributes }}>
+  <div class="world" id="world" aria-hidden="true"></div>
+  <div class="hero__text">
+    {%- if section.settings.kicker != blank -%}<p class="hero__kicker">{{ section.settings.kicker }}</p>{%- endif -%}
+    <h1 id="heroTitle">{{ section.settings.heading }}{% if section.settings.accent != blank %} <em>{{ section.settings.accent }}</em>{% endif %}</h1>
+    <h4 id="heroName">{{ first.title | upcase }}</h4>
+    <p class="hero__desc" id="heroDesc">{{ first.description | strip_html | strip | truncate: 240 | default: section.settings.fallback_description }}</p>
+    {%- if first_cheapest -%}
+      <p class="rating"><span id="heroPriceLabel">{% if first.products_count > 1 %}{{ 'collections.from' | t }}{% else %}{{ 'collections.price' | t }}{% endif %}</span> <b id="heroPrice">{{ first_cheapest.price | money }}</b></p>
+    {%- endif -%}
+    <div class="hero__cta">
+      <a class="btn btn--plum" id="heroShop" href="{{ first_lead.url | default: first.url | default: routes.collections_url }}">{{ section.settings.shop_label }} <span aria-hidden="true">→</span></a>
+      <a class="btn btn--ghost" id="heroAdd" href="{{ section.settings.explore_url | default: '/pages/create-your-own-box' }}">{{ section.settings.explore_label }}</a>
+    </div>
+    <ul class="hero__trust">
+      {%- if section.settings.badge_1 != blank -%}<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M12 8v13M3 12h18M12 8c-2-4-6-4-6-1.500S9 8 12 8c3 0 6 0 6-1.500S14 4 12 8z"/></svg>{{ section.settings.badge_1 }}</li>{%- endif -%}
+      {%- if section.settings.badge_2 != blank -%}<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M9 3l3 6 3-6M12 21L9 9M12 21l3-12"/></svg>{{ section.settings.badge_2 }}</li>{%- endif -%}
+      {%- if section.settings.badge_3 != blank -%}<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 19C5 10 11 4 20 4c0 9-6 15-15 15z"/><path d="M5 19c3-5 6-8 10-10"/></svg>{{ section.settings.badge_3 }}</li>{%- endif -%}
+    </ul>
+    {%- if first == blank and request.design_mode -%}<p class="editor-hint">Add collection blocks (or create collections that contain products) to fill the hero.</p>{%- endif -%}
+  </div>
+
+  <div class="hero__panel">
+    <div class="hero__word" id="heroWord" aria-hidden="true">
+      <span>{{ first.title | split: ' ' | last | upcase }}</span><span class="outline">{{ first.title | split: ' ' | last | upcase }}</span>
+    </div>
+    {%- assign vid = '' -%}
+    {%- capture first_world -%}{%- render 'world-key', source: handle_list[0] -%}{%- endcapture -%}
+    {%- assign first_world = first_world | strip -%}
+    {%- if first_world == 'gold' -%}{%- assign vid = 'hero-gold.mp4' | asset_url -%}{%- elsif first_world == 'street' -%}{%- assign vid = 'hero-street.mp4' | asset_url -%}{%- elsif first_world == 'pop' -%}{%- assign vid = 'hero-pop.mp4' | asset_url -%}{%- endif -%}
+    {%- if first_img -%}
+      <img class="hero__cup" id="heroImg" src="{{ first_img | image_url: width: 900 }}" alt="{{ first_img.alt | default: first.title | escape }}" width="380" height="380"{% if vid != blank %} style="display:none"{% endif %}>
+    {%- else -%}
+      <img class="hero__cup" id="heroImg" alt="" width="380" height="380" hidden>
+    {%- endif -%}
+    <video class="hero__cup hero__cup--video" id="heroVideo" muted loop playsinline preload="metadata" aria-label="{{ first.title | escape }}"{% if first_img %} poster="{{ first_img | image_url: width: 600 }}"{% endif %}{% if vid != blank %} src="{{ vid }}" autoplay style="display:block"{% endif %}></video>
+    <svg class="deco d1" data-parallax="-.08" aria-hidden="true"><use href="#crescent"/></svg>
+    <svg class="deco d2" data-parallax=".06" aria-hidden="true"><use href="#crescent"/></svg>
+    <svg class="deco d3" data-parallax="-.05" aria-hidden="true"><use href="#crescent"/></svg>
+    <svg class="spark s1" aria-hidden="true"><use href="#spark"/></svg>
+    <svg class="spark s2" aria-hidden="true"><use href="#spark"/></svg>
+    <svg class="spark s3" aria-hidden="true"><use href="#spark"/></svg>
+    {%- if handle_list.size > 1 -%}
+      <div class="hero__thumbs" id="thumbs" role="group" aria-label="{{ 'collections.choose' | t }}">
+        {%- for handle in handle_list -%}
+          {%- assign col = collections[handle] -%}
+          <button class="thumb{% if forloop.first %} active{% endif %}" type="button" data-i="{{ forloop.index0 }}" aria-label="{{ col.title | escape }}"><span>{{ col.title | split: ' ' | last }}</span></button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "div",
+  "class": "section-hero",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "SEOULUNA · MAKE THEM LOOK TWICE." },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "A LITTLE SEOUL, A LOT OF" },
+    { "type": "text", "id": "accent", "label": "Heading accent (italic)", "default": "YOU." },
+    { "type": "textarea", "id": "fallback_description", "label": "Description (used when a collection has none)", "default": "Six coordinated accessories and a reusable pouch, curated for every mood." },
+    { "type": "text", "id": "fallback_tagline", "label": "Tagline (used when a collection has no 'tagline' metafield)", "default": "Six coordinated accessories in one pouch." },
+    { "type": "text", "id": "card_sub", "label": "Second line on collection cards", "default": "6 accessories + 1 reusable pouch", "info": "Leave empty to hide." },
+    { "type": "text", "id": "shop_label", "label": "Shop button label", "default": "SHOP NOW" },
+    { "type": "text", "id": "explore_label", "label": "Explore button label", "default": "BUILD YOUR BOX" },
+    { "type": "text", "id": "explore_url", "label": "Second button link", "default": "/pages/create-your-own-box", "info": "Where the second button goes. Use a page path such as /pages/create-your-own-box." },
+    { "type": "header", "content": "Badges under the buttons" },
+    { "type": "text", "id": "badge_1", "label": "Badge 1", "default": "Curated Accessories" },
+    { "type": "text", "id": "badge_2", "label": "Badge 2", "default": "Premium Pouch" },
+    { "type": "text", "id": "badge_3", "label": "Badge 3", "default": "Reusable & Eco-friendly" }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        {
+          "type": "select", "id": "video", "label": "Hero video", "default": "auto",
+          "options": [
+            { "value": "auto", "label": "Automatic (bundled Pop / Street / Gold video)" },
+            { "value": "none", "label": "No video, use the collection image" },
+            { "value": "pop", "label": "Bundled: Seoul Pop" },
+            { "value": "gold", "label": "Bundled: Seoul Everyday Gold" },
+            { "value": "street", "label": "Bundled: Seoul Street" },
+            { "value": "custom", "label": "My own video URL" }
+          ]
+        },
+        { "type": "url", "id": "video_url", "label": "Video URL", "info": "Only used when 'My own video URL' is selected. Use an MP4 (vertical, about 9:16) hosted in Settings > Files." }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [{ "name": "Hero" }]
+}
+{% endschema %}

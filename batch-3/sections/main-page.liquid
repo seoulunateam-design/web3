@@ -1,0 +1,63 @@
+{%- comment -%}
+  Standard page and the "policy" page layout (side menu + white card), used for shipping, returns, privacy, terms, cancellations.
+  Content is either the page's own content (edit it under Online Store > Pages) or one of Shopify's own policies (Settings > Policies).
+  Nothing is shipped in these pages: the store owner writes the final text, so no placeholder legal text is ever published.
+{%- endcomment -%}
+{%- liquid
+  assign source = section.settings.policy_source
+  assign body = page.content
+  if source == 'shipping'
+    assign body = shop.shipping_policy.body
+  elsif source == 'refund'
+    assign body = shop.refund_policy.body
+  elsif source == 'privacy'
+    assign body = shop.privacy_policy.body
+  elsif source == 'terms'
+    assign body = shop.terms_of_service.body
+  endif
+-%}
+<div class="sp" {{ section.shopify_attributes }}>
+  <div class="sp__head">
+    {%- if section.settings.kicker != blank -%}<p class="sp__kicker">{{ section.settings.kicker }}</p>{%- endif -%}
+    <h1>{{ page.title }}</h1>
+    {%- if section.settings.lede != blank -%}<p class="sp__lede">{{ section.settings.lede }}</p>{%- endif -%}
+  </div>
+  <div class="sp__grid">
+    {%- if section.settings.show_side_menu -%}
+      <aside class="sp__side" aria-label="{{ 'general.customer_care' | t }}">
+        {%- for link in linklists[section.settings.menu].links -%}
+          <a href="{{ link.url }}"{% if link.active %} class="on" aria-current="page"{% endif %}>{{ link.title }}</a>
+        {%- endfor -%}
+      </aside>
+    {%- endif -%}
+    <article class="sp__body policy rte">
+      {%- if body != blank -%}
+        {{ body }}
+      {%- elsif request.design_mode -%}
+        <p><mark class="tbc">Add your text under Online Store &gt; Pages (page content), or choose a Shopify policy in this section's settings. This note is only visible in the theme editor.</mark></p>
+      {%- endif -%}
+    </article>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Page",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Small heading", "default": "CUSTOMER CARE" },
+    { "type": "text", "id": "lede", "label": "Intro line" },
+    { "type": "select", "id": "policy_source", "label": "Content from", "default": "page",
+      "options": [
+        { "value": "page", "label": "This page's own content" },
+        { "value": "shipping", "label": "Shopify shipping policy" },
+        { "value": "refund", "label": "Shopify refund policy" },
+        { "value": "privacy", "label": "Shopify privacy policy" },
+        { "value": "terms", "label": "Shopify terms of service" }
+      ],
+      "info": "Policies are written in Settings > Policies."
+    },
+    { "type": "checkbox", "id": "show_side_menu", "label": "Show the customer care menu", "default": true },
+    { "type": "link_list", "id": "menu", "label": "Customer care menu", "default": "footer" }
+  ]
+}
+{% endschema %}

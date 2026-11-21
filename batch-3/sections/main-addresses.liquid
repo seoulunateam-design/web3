@@ -1,0 +1,54 @@
+<section class="shop-page" {{ section.shopify_attributes }}>
+  <header class="shop-head">
+    <h1>Addresses</h1>
+    <p class="shop-head__desc"><a class="link" href="{{ routes.account_url }}">&larr; Back to account</a></p>
+  </header>
+
+  <div class="account-grid">
+    <div>
+      {%- paginate customer.addresses by 10 -%}
+        {%- for address in customer.addresses -%}
+          <div class="addr">
+            <p>{%- if address == customer.default_address %}<b>Default</b><br>{% endif -%}{{ address | format_address }}</p>
+            {%- form 'customer_address', address, class: 'addr__form' -%}
+              <details>
+                <summary class="link">Edit</summary>
+                {% render 'address-fields', address: address, form_id: address.id %}
+                <button class="btn btn--plum btn--sm" type="submit">SAVE</button>
+              </details>
+            {%- endform -%}
+            <form method="post" action="{{ address.url }}">
+              <input type="hidden" name="_method" value="delete">
+              <button class="link" type="submit" onclick="return confirm('Delete this address?')">Delete</button>
+            </form>
+          </div>
+        {%- else -%}
+          <p class="ov__empty">No saved addresses yet.</p>
+        {%- endfor -%}
+        {%- if paginate.pages > 1 -%}
+          <nav class="pager" aria-label="Pagination">
+            {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}">&larr; Previous</a>{%- endif -%}
+            <span>Page {{ paginate.current_page }} of {{ paginate.pages }}</span>
+            {%- if paginate.next -%}<a href="{{ paginate.next.url }}">Next &rarr;</a>{%- endif -%}
+          </nav>
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+
+    <aside class="account-side">
+      <h2 class="ov__sub">Add a new address</h2>
+      {%- form 'customer_address', customer.new_address, class: 'addr__form' -%}
+        {%- if form.errors -%}<p class="form-err" role="alert">{{ form.errors | default_errors }}</p>{%- endif -%}
+        {% render 'address-fields', address: customer.new_address, form_id: 'new' %}
+        <label class="check"><input type="checkbox" name="address[default]" value="1"> Set as default address</label>
+        <button class="btn btn--plum btn--block" type="submit">ADD ADDRESS</button>
+      {%- endform -%}
+    </aside>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Addresses"
+}
+{% endschema %}

@@ -1,0 +1,22 @@
+{%- comment -%}
+  Card for the collections grid and "you may also like".
+  Accepts: collection (required), index (number, used for the staggered entrance)
+{%- endcomment -%}
+{%- assign cheapest = collection.products | sort: 'price' | first -%}
+{%- assign img = collection.image | default: cheapest.featured_image -%}
+{%- capture card_world -%}{%- render 'world-key', source: collection.handle -%}{%- endcapture -%}
+{%- assign card_world = card_world | strip -%}
+<a class="cg__card{% if card_world != blank %} cg__card--{{ card_world }}{% endif %}" style="--i:{{ index | default: 0 }}" href="{{ collection.url }}">
+  <div class="cg__img">
+    {%- if img -%}
+      {{ img | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 500, 700', sizes: '(min-width: 861px) 340px, 46vw', alt: img.alt | default: collection.title }}
+    {%- else -%}
+      {{ 'collection-1' | placeholder_svg_tag }}
+    {%- endif -%}
+    <span class="cg__quick">{{ 'collections.quick_view' | t }}</span>
+  </div>
+  <h3>{{ collection.title | upcase }}</h3>
+  {%- assign blurb = collection.metafields.custom.blurb.value | default: collection.description | strip_html | truncate: 70 -%}
+  {%- if blurb != blank -%}<p class="cg__blurb">{{ blurb }}</p>{%- endif -%}
+  {%- if cheapest -%}<b class="cg__price">{% if collection.products_count > 1 %}{{ 'collections.from' | t }} {% endif %}{{ cheapest.price | money }}</b>{%- endif -%}
+</a>

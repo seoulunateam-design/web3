@@ -1,0 +1,122 @@
+{%- comment -%}
+  Feedback: customer reviews (entered by hand as blocks; none are invented), a looping photo strip and a feedback form.
+  The form uses Shopify's contact form: submissions arrive as email to the store, and are NOT published automatically.
+{%- endcomment -%}
+{%- assign has_reviews = false -%}
+{%- for block in section.blocks -%}{%- if block.type == 'review' -%}{%- assign has_reviews = true -%}{%- endif -%}{%- endfor -%}
+
+<section class="popular" id="feedback" {{ section.shopify_attributes }}>
+  <div class="label" data-reveal="left">{{ section.settings.label }}</div>
+
+  <div class="fb{% unless has_reviews %} fb--empty{% endunless %}" id="fbList">
+    {%- for copy in (1..2) -%}
+      {%- if copy == 2 and has_reviews == false -%}{%- continue -%}{%- endif -%}
+      <div class="fb__track"{% if copy == 2 %} aria-hidden="true"{% endif %}>
+        {%- if has_reviews -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'review' -%}
+              <article class="fb__card"{% if copy == 1 %} data-tilt {{ block.shopify_attributes }}{% endif %}>
+                {%- if block.settings.photo != blank -%}
+                  {{ block.settings.photo | image_url: width: 500 | image_tag: class: 'fb__photo', loading: 'lazy', alt: block.settings.name }}
+                {%- endif -%}
+                {%- assign stars = block.settings.rating | default: 5 -%}
+                <div class="fb__stars" aria-label="{{ stars }} / 5">
+                  {%- for i in (1..5) -%}{%- if i <= stars -%}★{%- else -%}☆{%- endif -%}{%- endfor -%}
+                </div>
+                <p class="fb__quote">“{{ block.settings.text }}”</p>
+                <div class="fb__who">
+                  {%- if block.settings.product_image != blank -%}
+                    {{ block.settings.product_image | image_url: width: 120 | image_tag: class: 'fb__prod', loading: 'lazy', alt: '' }}
+                  {%- endif -%}
+                  <span class="fb__meta">{{ block.settings.name | upcase }}<small>{{ block.settings.product }}</small></span>
+                </div>
+              </article>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          <article class="fb__card fb__card--empty" {{ section.shopify_attributes }}>
+            <p class="fb__none">{{ section.settings.empty_title }}</p>
+            <p class="fb__quote">{{ section.settings.empty_text }}</p>
+            {%- if section.settings.show_form and section.settings.empty_link != blank -%}
+              <div class="fb__who"><a href="#FeedbackForm">{{ section.settings.empty_link }}</a></div>
+            {%- endif -%}
+          </article>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+
+  <div class="fb fb--photos" id="fbPhotos" aria-hidden="true">
+    <div class="fb__track">{%- render 'photo-tiles', section: section, class: 'fb__shot', shift: true -%}</div>
+    <div class="fb__track">{%- render 'photo-tiles', section: section, class: 'fb__shot', shift: true -%}</div>
+  </div>
+
+  {%- if section.settings.show_form -%}
+    {%- form 'contact', id: 'FeedbackForm', class: 'fbform' -%}
+      <h3>{{ section.settings.form_heading }} <em>{{ section.settings.form_accent }}</em></h3>
+      {%- if form.posted_successfully? -%}
+        <p class="form-ok" role="status">{{ section.settings.sent_text }}</p>
+      {%- else -%}
+        {%- if form.errors -%}<p class="form-err" role="alert">{{ form.errors | default_errors }}</p>{%- endif -%}
+        <input type="hidden" name="contact[Form]" value="Customer feedback">
+        <div class="fbform__row">
+          <label>NAME<input name="contact[name]" type="text" maxlength="40" placeholder="Your name" autocomplete="name" required></label>
+          <label>EMAIL<input name="contact[email]" type="email" placeholder="Your email" autocomplete="email" required></label>
+        </div>
+        <label>YOUR POUCH
+          <select name="contact[Pouch]">
+            {%- for collection in collections -%}
+              {%- if collection.products_count > 0 and collection.handle != 'frontpage' -%}<option>{{ collection.title }}</option>{%- endif -%}
+            {%- endfor -%}
+          </select>
+        </label>
+        <div class="fbform__stars" id="fbStars" role="radiogroup" aria-label="Rating">
+          <span>RATING</span>
+          <input type="hidden" name="contact[Rating]" value="5" data-rating-input>
+          {%- for i in (1..5) -%}<button type="button" data-v="{{ i }}" aria-label="{{ i }} star{% if i > 1 %}s{% endif %}">★</button>{%- endfor -%}
+        </div>
+        <label>YOUR FEEDBACK<textarea name="contact[body]" rows="3" maxlength="280" placeholder="Tell us what you loved…" required></textarea></label>
+        <button class="btn btn--plum" type="submit">SEND FEEDBACK</button>
+      {%- endif -%}
+    {%- endform -%}
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Feedback",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label", "default": "FEEDBACK" },
+    { "type": "text", "id": "empty_title", "label": "No-reviews card: title", "default": "NO REVIEWS YET", "info": "Shown instead of reviews until you add real 'Customer review' blocks. No stars, names or photos are ever shown for it." },
+    { "type": "textarea", "id": "empty_text", "label": "No-reviews card: text", "default": "No customer reviews have been published yet. Bought a SEOULUNA pouch? We would love to hear how it went." },
+    { "type": "text", "id": "empty_link", "label": "No-reviews card: link to the form", "default": "Share your feedback" },
+    { "type": "checkbox", "id": "show_form", "label": "Show feedback form", "default": true, "info": "Submissions are emailed to the store. They are not published automatically." },
+    { "type": "text", "id": "form_heading", "label": "Form heading", "default": "Share your" },
+    { "type": "text", "id": "form_accent", "label": "Form heading accent", "default": "Seoul moment" },
+    { "type": "text", "id": "sent_text", "label": "Text after sending", "default": "Thank you! Your feedback has been sent to our team." }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Customer review",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Customer name" },
+        { "type": "text", "id": "product", "label": "Product / collection" },
+        { "type": "range", "id": "rating", "label": "Rating", "min": 1, "max": 5, "step": 1, "default": 5 },
+        { "type": "textarea", "id": "text", "label": "Review" },
+        { "type": "image_picker", "id": "photo", "label": "Customer photo (optional)" },
+        { "type": "image_picker", "id": "product_image", "label": "Small product picture (optional)" }
+      ]
+    },
+    {
+      "type": "photo",
+      "name": "Strip photo",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Photo", "info": "Photos in the strip below the reviews. Without any, bundled photos are used." }
+      ]
+    }
+  ],
+  "max_blocks": 50,
+  "presets": [{ "name": "Feedback" }]
+}
+{% endschema %}

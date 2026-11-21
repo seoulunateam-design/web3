@@ -1,0 +1,33 @@
+{%- comment -%}Home page promo for Build Your Own Box. Coming soon: no add to bag, no checkout.{%- endcomment -%}
+<section class="byobt-wrap" id="build-your-own-box" {{ section.shopify_attributes }}>
+  {%- render 'byob-coming-soon',
+    heading: section.settings.heading,
+    subheading: section.settings.subheading,
+    badge: section.settings.badge,
+    text: section.settings.text,
+    image_1: section.settings.image_1,
+    image_2: section.settings.image_2,
+    image_3: section.settings.image_3,
+    link_url: section.settings.link_url,
+    link_label: section.settings.link_label -%}
+</section>
+
+{% schema %}
+{
+  "name": "Box builder teaser",
+  "settings": [
+    { "type": "text", "id": "badge", "label": "Status badge", "default": "COMING SOON" },
+    { "type": "text", "id": "heading", "label": "Headline", "default": "BUILD YOUR OWN BOX" },
+    { "type": "text", "id": "subheading", "label": "Subheadline", "default": "Your favourites. Your style. Your own little world." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "A personalised accessory experience is coming to SEOULUNA. Choose your favourite pieces and create a box that reflects your style." },
+    { "type": "header", "content": "Pictures (optional)" },
+    { "type": "image_picker", "id": "image_1", "label": "Main box photo", "info": "Portrait 4:5. Leave empty to use the bundled box photos." },
+    { "type": "image_picker", "id": "image_2", "label": "Second photo" },
+    { "type": "image_picker", "id": "image_3", "label": "Third photo" },
+    { "type": "header", "content": "Optional link" },
+    { "type": "url", "id": "link_url", "label": "Link" },
+    { "type": "text", "id": "link_label", "label": "Link label" }
+  ],
+  "presets": [{ "name": "Box builder teaser" }]
+}
+{% endschema %}

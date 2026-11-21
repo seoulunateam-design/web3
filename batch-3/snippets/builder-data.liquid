@@ -1,0 +1,137 @@
+{%- comment -%}
+  Outputs the customization catalogue as JSON for assets/builder.js.
+  Sources: metaobjects byob_box, byob_category, byob_design (see BUILDER-SETUP.md).
+  Prices and stock always come from Shopify variants. Nothing is hardcoded here.
+  Parameter: product (the "Build Your Own Box" product, used when no box metaobjects exist).
+{%- endcomment -%}
+{%- if bundled -%}
+  {%- render 'builder-bundled-catalogue', product: product -%}
+{%- else -%}
+{%- liquid
+  assign sep = '~~~'
+  assign boxes = ''
+  assign box_source = 'metaobjects'
+
+  for box in shop.metaobjects.byob_box.values
+    if box.active.value == false
+      continue
+    endif
+    assign v = box.variant.value
+    if v == blank
+      continue
+    endif
+    assign j_name = box.name.value | json
+    assign j_price = v.price | money | json
+    assign j_order = box.sort_order.value | default: 0
+    assign j_box_img = 'null'
+    if box.box_image.value
+      assign j_box_img = box.box_image.value | image_url: width: 1400 | json
+    endif
+    assign j_lid_img = 'null'
+    if box.lid_image.value
+      assign j_lid_img = box.lid_image.value | image_url: width: 900 | json
+    endif
+    assign j_eng = 'null'
+    if box.engraving.value
+      assign j_eng = box.engraving.value | json
+    endif
+    capture j_swatch
+      echo box.swatch.value
+    endcapture
+    assign j_swatch = j_swatch | strip | json
+    capture item
+      echo '{"id":' | append: v.id | append: ',"name":' | append: j_name | append: ',"swatch":' | append: j_swatch
+      echo ',"variantId":' | append: v.id | append: ',"price":' | append: v.price | append: ',"priceText":' | append: j_price
+      echo ',"available":' | append: v.available | append: ',"order":' | append: j_order
+      echo ',"boxImage":' | append: j_box_img | append: ',"lidImage":' | append: j_lid_img | append: ',"engraving":' | append: j_eng | append: '}'
+    endcapture
+    assign boxes = boxes | append: item | strip_newlines | append: sep
+  endfor
+
+  if boxes == ''
+    assign box_source = 'variants'
+    if product
+      for v in product.variants
+        assign j_name = v.title | json
+        assign j_price = v.price | money | json
+        capture item
+          echo '{"id":' | append: v.id | append: ',"name":' | append: j_name | append: ',"swatch":""'
+          echo ',"variantId":' | append: v.id | append: ',"price":' | append: v.price | append: ',"priceText":' | append: j_price
+          echo ',"available":' | append: v.available | append: ',"order":' | append: forloop.index | append: '}'
+        endcapture
+        assign boxes = boxes | append: item | strip_newlines | append: sep
+      endfor
+    endif
+  endif
+  assign boxes_json = boxes | split: sep | join: ','
+
+  assign cats = ''
+  for c in shop.metaobjects.byob_category.values
+    assign j_key = c.key.value | json
+    assign j_label = c.label.value | json
+    assign j_order = c.sort_order.value | default: 0
+    assign j_icon = 'null'
+    if c.icon.value
+      assign j_icon = c.icon.value | image_url: width: 160 | json
+    endif
+    assign j_slot = 'null'
+    if c.slot.value
+      assign j_slot = c.slot.value | json
+    endif
+    capture item
+      echo '{"key":' | append: j_key | append: ',"label":' | append: j_label | append: ',"order":' | append: j_order
+      echo ',"icon":' | append: j_icon | append: ',"slot":' | append: j_slot | append: '}'
+    endcapture
+    assign cats = cats | append: item | strip_newlines | append: sep
+  endfor
+  assign cats_json = cats | split: sep | join: ','
+
+  assign designs = ''
+-%}
+{%- paginate shop.metaobjects.byob_design.values by 250 -%}
+  {%- for d in shop.metaobjects.byob_design.values -%}
+    {%- liquid
+      if d.active.value == false
+        continue
+      endif
+      assign cat = d.category.value
+      if cat == blank
+        continue
+      endif
+      assign sv = d.stock_variant.value
+      assign is_available = true
+      assign is_tracked = false
+      if sv != blank
+        assign is_tracked = true
+        if sv.available == false
+          assign is_available = false
+        endif
+      endif
+      assign j_id = d.system.id | json
+      assign j_name = d.name.value | json
+      assign j_cat = cat.key.value | json
+      assign j_order = d.sort_order.value | default: 0
+      assign j_thumb = 'null'
+      if d.thumbnail.value
+        assign j_thumb = d.thumbnail.value | image_url: width: 300 | json
+      endif
+      assign j_layer = 'null'
+      if d.preview_layer.value
+        assign j_layer = d.preview_layer.value | image_url: width: 700 | json
+      endif
+      capture j_swatch
+        echo d.swatch.value
+      endcapture
+      assign j_swatch = j_swatch | strip | json
+      capture item
+        echo '{"id":' | append: j_id | append: ',"name":' | append: j_name | append: ',"cat":' | append: j_cat | append: ',"swatch":' | append: j_swatch
+        echo ',"available":' | append: is_available | append: ',"tracked":' | append: is_tracked | append: ',"order":' | append: j_order
+        echo ',"thumb":' | append: j_thumb | append: ',"layer":' | append: j_layer | append: '}'
+      endcapture
+      assign designs = designs | append: item | strip_newlines | append: sep
+    -%}
+  {%- endfor -%}
+{%- endpaginate -%}
+{%- assign designs_json = designs | split: sep | join: ',' -%}
+{"source":{{ box_source | json }},"placeholder":{{ 'builder-placeholder.svg' | asset_url | json }},"boxes":[{{ boxes_json }}],"categories":[{{ cats_json }}],"designs":[{{ designs_json }}]}
+{%- endif -%}

@@ -1,0 +1,60 @@
+{%- comment -%}
+  Social-style photo grid. These are your own brand photographs, not embedded posts: no likes, counts or comments are shown.
+  Add "Photo" blocks, or leave empty to use bundled brand photos. Set your profile link to show a follow button.
+{%- endcomment -%}
+<section class="social" id="social" {{ section.shopify_attributes }}>
+  <div class="style__head" data-reveal>
+    {%- if section.settings.kicker != blank -%}<p class="bs__kicker">{{ section.settings.kicker }}</p>{%- endif -%}
+    <h2>{{ section.settings.heading }}</h2>
+    {%- if section.settings.profile_url != blank and section.settings.handle != blank -%}
+      <p><a href="{{ section.settings.profile_url }}" rel="noopener" target="_blank">{{ section.settings.handle }}</a></p>
+    {%- endif -%}
+  </div>
+  <div class="social__grid" data-stagger>
+    {%- assign has_blocks = false -%}
+    {%- for block in section.blocks -%}{%- if block.settings.image != blank -%}{%- assign has_blocks = true -%}{%- endif -%}{%- endfor -%}
+    {%- if has_blocks -%}
+      {%- for block in section.blocks -%}
+        {%- if block.settings.image != blank -%}
+          {%- assign tag = 'figure' -%}{%- if block.settings.link != blank -%}{%- assign tag = 'a' -%}{%- endif -%}
+          <{{ tag }} class="social__tile"{% if tag == 'a' %} href="{{ block.settings.link }}" rel="noopener"{% endif %} {{ block.shopify_attributes }}>
+            {{ block.settings.image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300, 450, 600', sizes: '(min-width: 861px) 200px, 33vw', alt: block.settings.image.alt | default: '' }}
+          </{{ tag }}>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- else -%}
+      {%- assign fallback = 'box-lightpink-velvet.jpg,reel-10.jpg,box-black.jpg,reel-20.jpg,box-lightpink-soft.jpg,reel-28.jpg' | split: ',' -%}
+      {%- for file in fallback -%}
+        <figure class="social__tile"><img src="{{ file | asset_url }}" alt="" width="400" height="500" loading="lazy" decoding="async"></figure>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+  {%- if section.settings.profile_url != blank and section.settings.button_label != blank -%}
+    <p class="bs__more"><a class="btn btn--ghost" href="{{ section.settings.profile_url }}" rel="noopener" target="_blank">{{ section.settings.button_label }}</a></p>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Social gallery",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Small heading", "default": "FOLLOW ALONG" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "The SEOULUNA world" },
+    { "type": "text", "id": "handle", "label": "Profile name", "info": "e.g. @yourhandle. Shown only with a profile link." },
+    { "type": "url", "id": "profile_url", "label": "Profile link" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "FOLLOW US" }
+  ],
+  "blocks": [
+    {
+      "type": "photo",
+      "name": "Photo",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Photo", "info": "Portrait 4:5 or square." },
+        { "type": "url", "id": "link", "label": "Link (optional)" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [{ "name": "Social gallery" }]
+}
+{% endschema %}

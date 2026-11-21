@@ -1,0 +1,112 @@
+<div class="sp sp--wide" {{ section.shopify_attributes }}>
+  {%- if collection.image and section.settings.show_banner -%}
+    {%- assign banner_alt = collection.image.alt | default: collection.title -%}
+    <header class="cbanner">
+      {{ collection.image | image_url: width: 1600 | image_tag: widths: '600, 900, 1200, 1600', sizes: '(min-width: 1120px) 1120px, 100vw', alt: banner_alt, fetchpriority: 'high', class: 'cbanner__img' }}
+      <div class="cbanner__text">
+        <p class="sp__kicker">{{ section.settings.kicker }}</p>
+        <h1>{{ collection.title | upcase }}</h1>
+        {%- if collection.description != blank -%}<div class="sp__lede rte">{{ collection.description }}</div>{%- endif -%}
+      </div>
+    </header>
+  {%- else -%}
+    <div class="sp__head">
+      <p class="sp__kicker">{{ section.settings.kicker }}</p>
+      <h1>{{ collection.title | upcase }}</h1>
+      {%- if collection.description != blank -%}<div class="sp__lede rte">{{ collection.description }}</div>{%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- paginate collection.products by section.settings.per_page -%}
+    {%- if collection.filters.size > 0 and section.settings.show_filters -%}
+      <form class="cf" id="CollectionFilters" action="{{ collection.url }}" method="get" data-filters>
+        {%- if collection.sort_by != blank -%}<input type="hidden" name="sort_by" value="{{ collection.sort_by }}">{%- endif -%}
+        <div class="cf__row">
+          {%- for filter in collection.filters -%}
+            <details class="cf__group">
+              <summary>{{ filter.label }}{% if filter.active_values.size > 0 %} <b>{{ filter.active_values.size }}</b>{% endif %}</summary>
+              <div class="cf__panel">
+                {%- case filter.type -%}
+                  {%- when 'price_range' -%}
+                    <label>{{ 'collections.price_from' | t }}
+                      <input type="number" inputmode="decimal" min="0" step="1" name="{{ filter.min_value.param_name }}" value="{% if filter.min_value.value %}{{ filter.min_value.value | divided_by: 100 }}{% endif %}" placeholder="0">
+                    </label>
+                    <label>{{ 'collections.price_to' | t }}
+                      <input type="number" inputmode="decimal" min="0" step="1" name="{{ filter.max_value.param_name }}" value="{% if filter.max_value.value %}{{ filter.max_value.value | divided_by: 100 }}{% endif %}" placeholder="{{ filter.range_max | divided_by: 100 | ceil }}">
+                    </label>
+                  {%- else -%}
+                    {%- for value in filter.values -%}
+                      <label class="cf__opt{% if value.count == 0 and value.active == false %} is-off{% endif %}">
+                        <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}"{% if value.active %} checked{% endif %}{% if value.count == 0 and value.active == false %} disabled{% endif %}>
+                        <span>{{ value.label }}</span> <small>({{ value.count }})</small>
+                      </label>
+                    {%- endfor -%}
+                {%- endcase -%}
+              </div>
+            </details>
+          {%- endfor -%}
+          <button class="btn btn--ghost cf__apply" type="submit">{{ 'collections.apply' | t }}</button>
+        </div>
+        {%- assign active_count = 0 -%}
+        {%- capture chips -%}
+          {%- for filter in collection.filters -%}
+            {%- for value in filter.active_values -%}<a class="cf__chip" href="{{ value.url_to_remove }}">{{ value.label }} <span aria-hidden="true">×</span></a>{%- assign active_count = active_count | plus: 1 -%}{%- endfor -%}
+            {%- if filter.type == 'price_range' and filter.min_value.value or filter.type == 'price_range' and filter.max_value.value -%}<a class="cf__chip" href="{{ filter.url_to_remove }}">{{ filter.label }} <span aria-hidden="true">×</span></a>{%- assign active_count = active_count | plus: 1 -%}{%- endif -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+        {%- if active_count > 0 -%}<div class="cf__chips">{{ chips }}<a class="cf__clear" href="{{ collection.url }}{% if collection.sort_by != blank %}?sort_by={{ collection.sort_by }}{% endif %}">{{ 'collections.filter_clear' | t }}</a></div>{%- endif -%}
+      </form>
+    {%- endif -%}
+    {%- if collection.products.size == 0 -%}
+      <p class="ov__empty">{% if collection.filters.size > 0 and collection.products_count == 0 %}{{ 'collections.no_match' | t }}{% else %}{{ 'collections.empty' | t }}{% endif %}</p>
+    {%- else -%}
+      <div class="cg-bar">
+        <span>{{ 'collections.product_count' | t: count: collection.products_count }}</span>
+        {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+        <label>{{ 'collections.sort' | t }}
+          <select id="SortBy" aria-label="{{ 'collections.sort' | t }}" data-sort-url="{{ collection.url }}">
+            <option value="manual"{% if sort_by == 'manual' %} selected{% endif %}>{{ 'collections.sort_featured' | t }}</option>
+            <option value="price-ascending"{% if sort_by == 'price-ascending' %} selected{% endif %}>{{ 'collections.sort_low' | t }}</option>
+            <option value="price-descending"{% if sort_by == 'price-descending' %} selected{% endif %}>{{ 'collections.sort_high' | t }}</option>
+            <option value="title-ascending"{% if sort_by == 'title-ascending' %} selected{% endif %}>{{ 'collections.sort_az' | t }}</option>
+          </select>
+        </label>
+      </div>
+      <div class="cg">
+        {%- for product in collection.products -%}
+          {%- render 'product-tile', product: product, index: forloop.index0, collection: collection -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+    {%- if paginate.pages > 1 -%}
+      <nav class="pager" aria-label="Pagination">
+        {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}">&larr; Previous</a>{%- endif -%}
+        <span>Page {{ paginate.current_page }} of {{ paginate.pages }}</span>
+        {%- if paginate.next -%}<a href="{{ paginate.next.url }}">Next &rarr;</a>{%- endif -%}
+      </nav>
+    {%- endif -%}
+  {%- endpaginate -%}
+</div>
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org/",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": {{ 'product.breadcrumb_home' | t | json }}, "item": {{ shop.url | json }} },
+      { "@type": "ListItem", "position": 2, "name": {{ collection.title | json }} }
+    ]
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Collection page",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Small heading", "default": "THE COLLECTION" },
+    { "type": "checkbox", "id": "show_banner", "label": "Show the collection image as a banner", "default": true },
+    { "type": "checkbox", "id": "show_filters", "label": "Show filters", "default": true, "info": "Filters appear when you set them up in the Shopify Search & Discovery app." },
+    { "type": "range", "id": "per_page", "label": "Products per page", "min": 4, "max": 24, "step": 4, "default": 12 }
+  ]
+}
+{% endschema %}

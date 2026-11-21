@@ -1,0 +1,71 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {}
+    },
+    "menu": {
+      "type": "featured-collections",
+      "settings": {}
+    },
+    "bestsellers": {
+      "type": "bestsellers",
+      "settings": {}
+    },
+    "story": {
+      "type": "brand-story",
+      "settings": {}
+    },
+    "style": {
+      "type": "style-inspiration",
+      "settings": {}
+    },
+    "reel": {
+      "type": "photo-reel",
+      "settings": {}
+    },
+    "byob": {
+      "type": "byob-teaser",
+      "settings": {}
+    },
+    "quality": {
+      "type": "intro-band",
+      "settings": {}
+    },
+    "feedback": {
+      "type": "feedback",
+      "settings": {}
+    },
+    "feeling": {
+      "type": "brand-feeling",
+      "settings": {}
+    },
+    "social": {
+      "type": "social-gallery",
+      "settings": {}
+    },
+    "strip": {
+      "type": "marquee",
+      "settings": {}
+    },
+    "contact": {
+      "type": "contact",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "menu",
+    "bestsellers",
+    "story",
+    "style",
+    "reel",
+    "byob",
+    "quality",
+    "feedback",
+    "feeling",
+    "social",
+    "strip",
+    "contact"
+  ]
+}

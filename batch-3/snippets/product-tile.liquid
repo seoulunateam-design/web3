@@ -1,0 +1,28 @@
+{%- comment -%}
+  Product card for a collection page (same look as the collection cards).
+  Accepts: product (required), index (number), collection (optional: keeps the collection in the product URL)
+{%- endcomment -%}
+{%- capture tile_world -%}{%- render 'world-key', source: product.handle -%}{%- endcapture -%}
+{%- assign tile_world = tile_world | strip -%}
+{%- if collection != blank -%}{%- assign tile_url = product.url | within: collection -%}{%- else -%}{%- assign tile_url = product.url -%}{%- endif -%}
+<a class="cg__card{% if tile_world != blank %} cg__card--{{ tile_world }}{% endif %}" style="--i:{{ index | default: 0 }}" href="{{ tile_url }}">
+  <div class="cg__img">
+    {%- if product.featured_image -%}
+      {{ product.featured_image | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 500, 700', sizes: '(min-width: 861px) 340px, 46vw', alt: product.featured_image.alt | default: product.title }}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag }}
+    {%- endif -%}
+    {%- assign alt_image = product.images[1] -%}
+    {%- if alt_image -%}
+      {{ alt_image | image_url: width: 700 | image_tag: loading: 'lazy', class: 'cg__alt', widths: '350, 500, 700', sizes: '(min-width: 861px) 340px, 46vw', alt: '' }}
+    {%- endif -%}
+    {%- if product.available == false -%}<span class="cg__badge cg__badge--out">{{ 'product.sold_out' | t }}</span>
+    {%- elsif product.compare_at_price > product.price -%}<span class="cg__badge">{{ 'collections.sale' | t }}</span>
+    {%- endif -%}
+    <span class="cg__quick">{{ 'collections.quick_view' | t }}</span>
+  </div>
+  <h3>{{ product.title | upcase }}</h3>
+  {%- if product.metafields.custom.blurb.value != blank -%}<p class="cg__blurb">{{ product.metafields.custom.blurb.value }}</p>{%- endif -%}
+  <b class="cg__price">{% render 'price', product: product, from: product.price_varies %}</b>
+  {%- unless product.available -%}<small class="cg__sold">{{ 'product.sold_out' | t }}</small>{%- endunless -%}
+</a>

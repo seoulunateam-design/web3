@@ -1,0 +1,45 @@
+<div class="sp sp--wide" {{ section.shopify_attributes }}>
+  <div class="sp__head">
+    <p class="sp__kicker">{{ section.settings.kicker }}</p>
+    <h1>{{ section.settings.heading | upcase }}</h1>
+    {%- if section.settings.lede != blank -%}<p class="sp__lede">{{ section.settings.lede }}</p>{%- endif -%}
+  </div>
+
+  {%- paginate collections by 24 -%}
+    {%- assign shown = 0 -%}
+    {%- capture cards -%}
+      {%- for collection in collections -%}
+        {%- if collection.handle != 'frontpage' -%}
+          {%- render 'collection-card', collection: collection, index: shown -%}
+          {%- assign shown = shown | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+    <div class="cg-bar">
+      <span>{{ 'collections.count' | t: count: shown }}</span>
+    </div>
+    {%- if shown == 0 -%}
+      <p class="ov__empty">{{ 'collections.empty' | t }}</p>
+    {%- else -%}
+      <div class="cg">{{ cards }}</div>
+    {%- endif -%}
+    {%- if paginate.pages > 1 -%}
+      <nav class="pager" aria-label="Pagination">
+        {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}">&larr; Previous</a>{%- endif -%}
+        <span>Page {{ paginate.current_page }} of {{ paginate.pages }}</span>
+        {%- if paginate.next -%}<a href="{{ paginate.next.url }}">Next &rarr;</a>{%- endif -%}
+      </nav>
+    {%- endif -%}
+  {%- endpaginate -%}
+</div>
+
+{% schema %}
+{
+  "name": "Collections list",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Small heading", "default": "THE COLLECTIONS" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Collections" },
+    { "type": "text", "id": "lede", "label": "Intro text", "default": "Six coordinated accessories and a reusable pouch in every collection." }
+  ]
+}
+{% endschema %}

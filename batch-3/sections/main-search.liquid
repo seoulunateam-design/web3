@@ -1,0 +1,37 @@
+<section class="shop-page" {{ section.shopify_attributes }}>
+  <header class="shop-head"><h1>Search</h1></header>
+  <form action="{{ routes.search_url }}" method="get" class="search-form" role="search">
+    <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="Search products" aria-label="Search">
+    <button class="btn btn--plum" type="submit">SEARCH</button>
+  </form>
+  {%- if search.performed -%}
+    {%- paginate search.results by 12 -%}
+      {%- if search.results_count == 0 -%}
+        <p class="ov__empty">No results for “{{ search.terms | escape }}”.</p>
+      {%- else -%}
+        <div class="cg">
+          {%- for item in search.results -%}
+            {%- if item.object_type == 'product' -%}
+              {% render 'product-tile', product: item, index: forloop.index0 %}
+            {%- else -%}
+              <article class="pcard"><h3 class="pcard__title"><a href="{{ item.url }}">{{ item.title }}</a></h3></article>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+      {%- if paginate.pages > 1 -%}
+        <nav class="pager" aria-label="Pagination">
+          {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}">&larr; Previous</a>{%- endif -%}
+          <span>Page {{ paginate.current_page }} of {{ paginate.pages }}</span>
+          {%- if paginate.next -%}<a href="{{ paginate.next.url }}">Next &rarr;</a>{%- endif -%}
+        </nav>
+      {%- endif -%}
+    {%- endpaginate -%}
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Search"
+}
+{% endschema %}

@@ -1,0 +1,219 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign whats_inside = product.metafields.custom.whats_inside.value
+  assign wi_kind = whats_inside | json | slice: 0, 1
+  if whats_inside != blank and wi_kind != '['
+    assign whats_inside = whats_inside | strip | newline_to_br | split: '<br />'
+  endif
+  assign tagline = product.metafields.custom.tagline.value | default: product.vendor
+  assign video_media = product.media | where: 'media_type', 'video' | first
+  assign first_collection = product.collections | first
+-%}
+<div class="pp-wrap" data-product data-product-id="{{ product.id }}" {{ section.shopify_attributes }}>
+  <nav class="pp-crumb" aria-label="{{ 'product.breadcrumb_collections' | t }}">
+    <a href="{{ routes.root_url }}">{{ 'product.breadcrumb_home' | t }}</a><span>/</span>
+    {%- if first_collection -%}
+      <a href="{{ first_collection.url }}">{{ first_collection.title }}</a><span>/</span>
+    {%- else -%}
+      <a href="{{ routes.collections_url }}">{{ 'product.breadcrumb_collections' | t }}</a><span>/</span>
+    {%- endif -%}
+    <b>{{ product.title }}</b>
+  </nav>
+
+  <div class="pp">
+    <div class="pp__media">
+      {%- assign main_ratio = product.featured_media.aspect_ratio | default: 1 | at_least: 0.75 | at_most: 1 -%}
+      <div class="pp__main" data-gallery data-count="{{ product.images.size }}" style="--ar: {{ main_ratio }}">
+        {%- if product.featured_media -%}
+          {%- assign main_alt = product.featured_media.alt | default: product.title -%}
+          {{ product.featured_media | image_url: width: 1200 | image_tag: id: 'ppImg', widths: '600, 900, 1200', sizes: '(min-width: 900px) 540px, 90vw', alt: main_alt, fetchpriority: 'high' }}
+        {%- else -%}
+          <span id="ppImg">{{ 'product-1' | placeholder_svg_tag }}</span>
+        {%- endif -%}
+        {%- if video_media -%}
+          {%- assign mp4 = video_media.sources | where: 'format', 'mp4' | first -%}
+          <video id="ppVid" src="{{ mp4.url | default: video_media.sources.first.url }}" muted loop playsinline preload="none" poster="{{ video_media.preview_image | image_url: width: 1200 }}" hidden></video>
+        {%- endif -%}
+      </div>
+      {%- if product.images.size > 1 or video_media -%}
+        <div class="pp__thumbs">
+          {%- for image in product.images -%}
+            <button type="button" class="{% if forloop.first %}on{% endif %}" data-gallery-src="{{ image | image_url: width: 1200 }}" data-gallery-alt="{{ image.alt | default: product.title | escape }}" aria-label="{{ 'product.photo_n' | t: n: forloop.index }}">
+              {{ image | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}
+            </button>
+          {%- endfor -%}
+          {%- if video_media -%}
+            <button type="button" data-video aria-label="Play video">{{ video_media.preview_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}<i>▶</i></button>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="pp__info">
+      {%- if tagline != blank -%}<p class="pp__tag">{{ tagline }}</p>{%- endif -%}
+      <h1 class="pp__title">{{ product.title | upcase }}</h1>
+      <p class="pp__price" data-price>{% render 'price', product: product %}</p>
+      <p class="pp__tax">{{ 'product.tax_note' | t }}</p>
+      {%- if product.description != blank -%}<div class="pp__desc rte">{{ product.description }}</div>{%- endif -%}
+
+      {%- if whats_inside != blank -%}
+        <h2>{{ 'product.whats_inside' | t }}</h2>
+        <ul class="pp__in">{%- for item in whats_inside -%}{%- assign item_text = item | strip -%}{%- if item_text != blank -%}<li>{{ item_text }}</li>{%- endif -%}{%- endfor -%}</ul>
+      {%- endif -%}
+
+      {%- form 'product', product, id: 'ProductForm', class: 'pp__form', data-product-form: '' -%}
+        {%- unless product.has_only_default_variant -%}
+          <div class="pp__opts">
+            {%- for option in product.options_with_values -%}
+              <label class="pdp__opt">{{ option.name | upcase }}
+                <select data-option="{{ forloop.index0 }}">
+                  {%- for value in option.values -%}
+                    <option value="{{ value | escape }}"{% if option.selected_value == value %} selected{% endif %}>{{ value }}</option>
+                  {%- endfor -%}
+                </select>
+              </label>
+            {%- endfor -%}
+          </div>
+        {%- endunless -%}
+        <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-input>
+        <script type="application/json" data-variants>{{ product.variants | json }}</script>
+
+        <div class="pp__buy">
+          <div class="pp__qty" role="group" aria-label="{{ 'product.quantity' | t }}">
+            <button type="button" data-pq="-1" aria-label="−">−</button>
+            <input type="number" name="quantity" value="1" min="1" max="99" aria-label="{{ 'product.quantity' | t }}" data-pq-input>
+            <button type="button" data-pq="1" aria-label="+">+</button>
+          </div>
+          <p class="pp__total">Total <b data-total>{{ current_variant.price | money }}</b></p>
+        </div>
+
+        <div class="pp__cta">
+          <button class="btn btn--plum" type="submit" name="add" data-add-submit{% unless current_variant.available %} disabled{% endunless %}>
+            <span data-add-label>{% if current_variant.available %}{{ 'product.add_to_cart' | t }}{% else %}{{ 'product.sold_out' | t }}{% endif %}</span>
+          </button>
+          <button class="btn btn--plum btn--solid" type="button" data-buy-now{% unless current_variant.available %} disabled{% endunless %}>{{ section.settings.buy_now_label }}</button>
+        </div>
+        <p class="form-err" data-form-error role="alert" hidden></p>
+        {%- if section.settings.show_dynamic_checkout -%}{{ form | payment_button }}{%- endif -%}
+      {%- endform -%}
+
+      {%- if section.settings.delivery_info != blank -%}
+        <div class="pp__ship"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6h11v10H3zM14 9h4l3 3v4h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg><div><small>DELIVERY</small><b>{{ section.settings.delivery_info }}</b></div></div>
+      {%- endif -%}
+
+      <details class="pp__acc" open>
+      <summary>{{ 'product.details' | t }}</summary>
+      <dl class="pp__facts">
+        {%- if product.metafields.custom.materials != blank -%}<dt>{{ 'product.materials' | t }}</dt><dd>{{ product.metafields.custom.materials }}</dd>{%- endif -%}
+        {%- if product.metafields.custom.dimensions != blank -%}<dt>{{ 'product.dimensions' | t }}</dt><dd>{{ product.metafields.custom.dimensions }}</dd>{%- endif -%}
+        {%- if product.metafields.custom.care != blank -%}<dt>{{ 'product.care' | t }}</dt><dd>{{ product.metafields.custom.care }}</dd>{%- endif -%}
+        <dt>{{ 'product.availability' | t }}</dt><dd data-availability>{% if current_variant.available %}{{ 'product.in_stock' | t }}{% else %}{{ 'product.sold_out' | t }}{% endif %}</dd>
+      </dl>
+      </details>
+
+      <details class="pp__acc">
+      <summary>{{ 'product.shipping_returns' | t }}</summary>
+      {%- if section.settings.delivery_info != blank -%}<p class="pp__acc-text">{{ section.settings.delivery_info }}</p>{%- endif -%}
+      <p class="pp__links">
+        {%- if shop.shipping_policy.body != blank -%}<a href="{{ shop.shipping_policy.url }}">{{ 'product.shipping' | t }}</a> · {%- endif -%}
+        {%- if shop.refund_policy.body != blank -%}<a href="{{ shop.refund_policy.url }}">{{ 'product.returns' | t }}</a> · {%- endif -%}
+        <a href="{{ pages['contact'].url | default: routes.search_url }}">{{ 'product.need_help' | t }}</a>
+      </p>
+      </details>
+    </div>
+  </div>
+
+  <div class="ribbon ribbon--flow" aria-hidden="true"><div class="ribbon__track">
+    {%- for i in (1..8) -%}<span>{{ shop.name | upcase }} ✦</span>{%- endfor -%}
+  </div></div>
+
+  {%- assign rel_count = 0 -%}
+  {%- capture rel_cards -%}
+    {%- if first_collection -%}
+      {%- for p in first_collection.products limit: 8 -%}
+        {%- if p.id != product.id and rel_count < 4 -%}
+          {%- render 'product-tile', product: p, index: rel_count, collection: first_collection -%}
+          {%- assign rel_count = rel_count | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endcapture -%}
+  {%- if rel_count > 0 -%}
+    <section class="pp-more" aria-label="{{ 'product.more_from' | t }}">
+      <h2>{{ 'product.more_from' | t }}</h2>
+      <div class="cg cg--4">{{ rel_cards }}</div>
+    </section>
+  {%- endif -%}
+
+  <section class="pp-more pp-recent" data-recent data-current="{{ product.handle }}" hidden aria-label="{{ 'product.recently_viewed' | t }}">
+    <h2>{{ 'product.recently_viewed' | t }}</h2>
+    <div class="cg cg--4" data-recent-list></div>
+  </section>
+
+  {%- assign more_shown = 0 -%}
+  {%- capture more_cards -%}
+    {%- for c in collections -%}
+      {%- if more_shown < 3 and c.products_count > 0 and c.handle != 'frontpage' and c.handle != first_collection.handle -%}
+        {%- render 'collection-card', collection: c, index: more_shown -%}
+        {%- assign more_shown = more_shown | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+  {%- if more_shown > 0 and rel_count == 0 -%}
+    <section class="pp-more" aria-label="{{ 'product.you_may_like' | t }}">
+      <h2>{{ 'product.you_may_like' | t }}</h2>
+      <div class="cg">{{ more_cards }}</div>
+    </section>
+  {%- endif -%}
+</div>
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org/",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": {{ 'product.breadcrumb_home' | t | json }}, "item": {{ shop.url | json }} }
+      {%- if first_collection -%},
+      { "@type": "ListItem", "position": 2, "name": {{ first_collection.title | json }}, "item": {{ shop.url | append: first_collection.url | json }} },
+      { "@type": "ListItem", "position": 3, "name": {{ product.title | json }} }
+      {%- else -%},
+      { "@type": "ListItem", "position": 2, "name": {{ product.title | json }} }
+      {%- endif -%}
+    ]
+  }
+</script>
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "url": {{ shop.url | append: product.url | json }},
+    "description": {{ product.description | strip_html | strip | json }},
+    {%- if product.featured_image -%}"image": [{%- for image in product.images limit: 5 -%}{{ image | image_url: width: 1200 | prepend: 'https:' | json }}{% unless forloop.last %},{% endunless %}{%- endfor -%}],{%- endif -%}
+    {%- if current_variant.sku != blank -%}"sku": {{ current_variant.sku | json }},{%- endif -%}
+    {%- if product.vendor != blank -%}"brand": { "@type": "Brand", "name": {{ product.vendor | json }} },{%- endif -%}
+    "offers": [
+      {%- for variant in product.variants -%}
+      {
+        "@type": "Offer",
+        "url": {{ shop.url | append: variant.url | json }},
+        "priceCurrency": {{ cart.currency.iso_code | json }},
+        "price": {{ variant.price | divided_by: 100.0 | json }},
+        "availability": "https://schema.org/{% if variant.available %}InStock{% else %}OutOfStock{% endif %}",
+        "itemCondition": "https://schema.org/NewCondition"
+      }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Product",
+  "settings": [
+    { "type": "text", "id": "buy_now_label", "label": "'Buy it now' button label", "default": "BUY IT NOW", "info": "Adds the item to the bag and goes straight to Shopify checkout." },
+    { "type": "text", "id": "delivery_info", "label": "Delivery note", "info": "Shown in a box under the buttons. Leave empty to hide it, and only enter delivery times you can keep." },
+    { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Show Shopify's express checkout buttons", "default": false, "info": "Shop Pay, Google Pay etc. Only appear when enabled in your payment settings." }
+  ]
+}
+{% endschema %}

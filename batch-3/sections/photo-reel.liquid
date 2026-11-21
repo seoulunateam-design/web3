@@ -1,0 +1,33 @@
+{%- comment -%}
+  Photo reel: two rows of photos drifting in opposite directions. Each row prints its photos twice, so the loop is
+  seamless on any screen width. Add "Photo" blocks to use your own pictures; without blocks it uses the photos bundled in assets/.
+{%- endcomment -%}
+<div class="reel-wrap" {{ section.shopify_attributes }}>
+  <div class="reel" id="reel" aria-hidden="true">
+    {%- for row in (0..1) -%}
+      <div class="reel__row{% if row == 1 %} reel__row--rev{% endif %}">
+        <div class="reel__track">
+          {%- render 'photo-tiles', section: section, parity: row, class: 'reel__tile' -%}
+          {%- render 'photo-tiles', section: section, parity: row, class: 'reel__tile' -%}
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Photo reel",
+  "blocks": [
+    {
+      "type": "photo",
+      "name": "Photo",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Photo", "info": "Portrait 4:5 photos look best." }
+      ]
+    }
+  ],
+  "max_blocks": 40,
+  "presets": [{ "name": "Photo reel" }]
+}
+{% endschema %}

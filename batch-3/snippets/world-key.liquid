@@ -1,0 +1,14 @@
+{%- comment -%}
+  Picks the colour "world" (pop, street or gold) used for a collection or product.
+  Accepts: source (text to look at, e.g. a handle + title). Prints nothing when nothing matches.
+{%- endcomment -%}
+{%- liquid
+  assign s = source | downcase
+  if s contains 'street'
+    echo 'street'
+  elsif s contains 'gold'
+    echo 'gold'
+  elsif s contains 'pop'
+    echo 'pop'
+  endif
+-%}

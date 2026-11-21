@@ -1,0 +1,72 @@
+{%- comment -%}
+  Prints window.COLL: the collections the home page hero and collection browser work with.
+  Everything comes from Shopify (titles, images, prices, variants, availability). Nothing is hardcoded.
+  Accepts: handles (comma separated collection handles), section (the section that owns the blocks, for per-collection settings)
+{%- endcomment -%}
+{%- assign handle_list = handles | split: ',' -%}
+{%- assign palette = 'pop,street,gold' | split: ',' -%}
+<script>
+window.COLL = [
+{%- for handle in handle_list -%}
+  {%- assign col = collections[handle] -%}
+  {%- assign cheapest = col.products | sort: 'price' | first -%}
+  {%- assign lead = col.products | first -%}
+  {%- assign img = col.image | default: cheapest.featured_image -%}
+  {%- capture world -%}{%- render 'world-key', source: handle -%}{%- endcapture -%}
+  {%- assign world = world | strip -%}
+  {%- if world == blank -%}
+    {%- assign idx = forloop.index0 | modulo: 3 -%}
+    {%- assign world = palette[idx] -%}
+  {%- endif -%}
+  {%- assign video = '' -%}
+  {%- assign vmode = 'auto' -%}
+  {%- assign vurl = '' -%}
+  {%- for block in section.blocks -%}
+    {%- if block.settings.collection.handle == handle -%}
+      {%- assign vmode = block.settings.video | default: 'auto' -%}
+      {%- assign vurl = block.settings.video_url -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- if vmode == 'auto' -%}
+    {%- if world == 'gold' %}{%- assign video = 'hero-gold.mp4' | asset_url -%}{%- elsif world == 'street' %}{%- assign video = 'hero-street.mp4' | asset_url -%}{%- elsif world == 'pop' %}{%- assign video = 'hero-pop.mp4' | asset_url -%}{%- endif -%}
+  {%- elsif vmode == 'pop' -%}{%- assign video = 'hero-pop.mp4' | asset_url -%}
+  {%- elsif vmode == 'gold' -%}{%- assign video = 'hero-gold.mp4' | asset_url -%}
+  {%- elsif vmode == 'street' -%}{%- assign video = 'hero-street.mp4' | asset_url -%}
+  {%- elsif vmode == 'custom' -%}{%- assign video = vurl -%}
+  {%- endif -%}
+  {%- assign word = col.title | split: ' ' | last | upcase -%}
+  {%- assign tagline = col.metafields.custom.tagline.value | default: section.settings.fallback_tagline -%}
+  {%- assign blurb = col.metafields.custom.blurb.value | default: col.description | strip_html | truncate: 60 -%}
+  {%- assign multi = false -%}
+  {%- if col.products_count > 1 -%}{%- assign multi = true -%}{%- endif -%}
+  {%- assign single_variant = false -%}
+  {%- if lead and lead.variants.size == 1 and lead.available %}{%- assign single_variant = true -%}{%- endif -%}
+  {
+    "key": {{ handle | json }},
+    "world": {{ world | json }},
+    "name": {{ col.title | json }},
+    "word": {{ word | json }},
+    "price": {{ cheapest.price | default: 0 | json }},
+    "priceText": {{ cheapest.price | money | json }},
+    "from": {{ multi | json }},
+    "img": {{ img | image_url: width: 900 | json | default: 'null' }},
+    "alt": {{ img.alt | default: col.title | json | default: 'null' }},
+    "video": {{ video | json | default: '""' }},
+    "tag": {{ tagline | json | default: 'null' }},
+    "blurb": {{ blurb | json | default: 'null' }},
+    "desc": {{ col.description | strip_html | strip | truncate: 240 | default: section.settings.fallback_description | json }},
+    "inside": {{ lead.metafields.custom.whats_inside.value | json | default: 'null' }},
+    "url": {{ col.url | json }},
+    "productUrl": {{ lead.url | default: col.url | json | default: '""' }},
+    "variantId": {% if single_variant %}{{ lead.selected_or_first_available_variant.id }}{% else %}null{% endif %},
+    "available": {{ lead.available | default: false | json }},
+    "sub": {{ section.settings.card_sub | json }},
+    "fromLabel": {{ 'collections.from' | t | json }},
+    "priceLabel": {{ 'collections.price' | t | json }},
+    "addLabel": {{ 'product.add_to_cart' | t | json }},
+    "viewLabel": {{ 'collections.view' | t | json }},
+    "soldOut": {{ 'product.sold_out' | t | json }}
+  }{% unless forloop.last %},{% endunless %}
+{%- endfor -%}
+];
+</script>

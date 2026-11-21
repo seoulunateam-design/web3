@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "main": {
+      "type": "builder",
+      "settings": {
+        "enable_purchasing": true,
+        "preview_only": false,
+        "bundled_catalogue": true,
+        "product": "build-your-own-box",
+        "kicker": "SEOULUNA",
+        "heading": "Create Your Own Box",
+        "tagline": "Choose your box, pick your six pieces, add your name.",
+        "step2_sub": "Tap a category, then tap a design to choose it. You need 6 in total, one from each. All six are included in the box price."
+      }
+    }
+  },
+  "order": ["main"]
+}

@@ -1,0 +1,158 @@
+{%- comment -%}
+  Bundled demo catalogue for the "Create Your Own Box" preview page: real photographs of the pieces, shipped in assets/ (cyo-*.webp).
+  Names are placeholders ("Ring 01"...) until real design names are set. Box prices are read from the Shopify product variants whose
+  title matches the box name (Hot Pink / Black / Light Pink); without the product they show a dash. With the product selected, the three box variants carry their id and stock so the box can be bought; the pieces are recorded as line item properties.
+  Accepts: product (optional)
+{%- endcomment -%}
+{%- capture boxes_json -%}
+{%- liquid
+  assign pv = null
+  if product
+    for v in product.variants
+      if v.title == 'Hot Pink' or v.option1 == 'Hot Pink'
+        assign pv = v
+      endif
+    endfor
+  endif
+  assign ptxt = ''
+  assign pcents = 0
+  assign vid = 0
+  assign vavail = true
+  if pv
+    assign ptxt = pv.price | money
+    assign pcents = pv.price
+    assign vid = pv.id
+    assign vavail = pv.available
+  endif
+  assign ptxt_json = ptxt | json
+-%}{"id":1,"name":"Hot Pink","swatch":"#d54273","variantId":{{ vid }},"price":{{ pcents }},"priceText":{{ ptxt_json }},"available":{{ vavail }},"order":1,"thumb":{{ 'cyo-box-hotpink.webp' | asset_url | json }},"lidImage":{{ 'cyo-box-hotpink.webp' | asset_url | json }},"boxImage":{{ 'cyo-hero-hotpink.webp' | asset_url | json }},"engraving":{"x":50,"y":36,"rotate":-4,"size":9}},
+{%- liquid
+  assign pv = null
+  if product
+    for v in product.variants
+      if v.title == 'Black' or v.option1 == 'Black'
+        assign pv = v
+      endif
+    endfor
+  endif
+  assign ptxt = ''
+  assign pcents = 0
+  assign vid = 0
+  assign vavail = true
+  if pv
+    assign ptxt = pv.price | money
+    assign pcents = pv.price
+    assign vid = pv.id
+    assign vavail = pv.available
+  endif
+  assign ptxt_json = ptxt | json
+-%}{"id":2,"name":"Black","swatch":"#373837","variantId":{{ vid }},"price":{{ pcents }},"priceText":{{ ptxt_json }},"available":{{ vavail }},"order":2,"thumb":{{ 'cyo-box-black.webp' | asset_url | json }},"lidImage":{{ 'cyo-box-black.webp' | asset_url | json }},"boxImage":{{ 'cyo-hero-black.webp' | asset_url | json }},"engraving":{"x":50,"y":46,"rotate":0,"size":6.5}},
+{%- liquid
+  assign pv = null
+  if product
+    for v in product.variants
+      if v.title == 'Light Pink' or v.option1 == 'Light Pink'
+        assign pv = v
+      endif
+    endfor
+  endif
+  assign ptxt = ''
+  assign pcents = 0
+  assign vid = 0
+  assign vavail = true
+  if pv
+    assign ptxt = pv.price | money
+    assign pcents = pv.price
+    assign vid = pv.id
+    assign vavail = pv.available
+  endif
+  assign ptxt_json = ptxt | json
+-%}{"id":3,"name":"Light Pink","swatch":"#dec3b8","variantId":{{ vid }},"price":{{ pcents }},"priceText":{{ ptxt_json }},"available":{{ vavail }},"order":3,"thumb":{{ 'cyo-box-lightpink.webp' | asset_url | json }},"lidImage":{{ 'cyo-box-lightpink.webp' | asset_url | json }},"boxImage":{{ 'cyo-hero-lightpink.webp' | asset_url | json }},"engraving":{"x":51,"y":35,"rotate":-4,"size":9}}
+{%- endcapture -%}
+{%- capture designs_json -%}
+{"id":"chain-01","name":"Chain 01","cat":"chain","swatch":"","available":true,"tracked":false,"order":1,"thumb":{{ 'cyo-chain-01.webp' | asset_url | json }},"layer":null},
+{"id":"chain-02","name":"Chain 02","cat":"chain","swatch":"","available":true,"tracked":false,"order":2,"thumb":{{ 'cyo-chain-02.webp' | asset_url | json }},"layer":null},
+{"id":"chain-03","name":"Chain 03","cat":"chain","swatch":"","available":true,"tracked":false,"order":3,"thumb":{{ 'cyo-chain-03.webp' | asset_url | json }},"layer":null},
+{"id":"chain-04","name":"Chain 04","cat":"chain","swatch":"","available":true,"tracked":false,"order":4,"thumb":{{ 'cyo-chain-04.webp' | asset_url | json }},"layer":null},
+{"id":"chain-05","name":"Chain 05","cat":"chain","swatch":"","available":true,"tracked":false,"order":5,"thumb":{{ 'cyo-chain-05.webp' | asset_url | json }},"layer":null},
+{"id":"chain-06","name":"Chain 06","cat":"chain","swatch":"","available":true,"tracked":false,"order":6,"thumb":{{ 'cyo-chain-06.webp' | asset_url | json }},"layer":null},
+{"id":"chain-07","name":"Chain 07","cat":"chain","swatch":"","available":true,"tracked":false,"order":7,"thumb":{{ 'cyo-chain-07.webp' | asset_url | json }},"layer":null},
+{"id":"chain-08","name":"Chain 08","cat":"chain","swatch":"","available":true,"tracked":false,"order":8,"thumb":{{ 'cyo-chain-08.webp' | asset_url | json }},"layer":null},
+{"id":"chain-09","name":"Chain 09","cat":"chain","swatch":"","available":true,"tracked":false,"order":9,"thumb":{{ 'cyo-chain-09.webp' | asset_url | json }},"layer":null},
+{"id":"chain-10","name":"Chain 10","cat":"chain","swatch":"","available":true,"tracked":false,"order":10,"thumb":{{ 'cyo-chain-10.webp' | asset_url | json }},"layer":null},
+{"id":"chain-11","name":"Chain 11","cat":"chain","swatch":"","available":true,"tracked":false,"order":11,"thumb":{{ 'cyo-chain-11.webp' | asset_url | json }},"layer":null},
+{"id":"chain-12","name":"Chain 12","cat":"chain","swatch":"","available":true,"tracked":false,"order":12,"thumb":{{ 'cyo-chain-12.webp' | asset_url | json }},"layer":null},
+{"id":"chain-13","name":"Chain 13","cat":"chain","swatch":"","available":true,"tracked":false,"order":13,"thumb":{{ 'cyo-chain-13.webp' | asset_url | json }},"layer":null},
+{"id":"chain-14","name":"Chain 14","cat":"chain","swatch":"","available":true,"tracked":false,"order":14,"thumb":{{ 'cyo-chain-14.webp' | asset_url | json }},"layer":null},
+{"id":"chain-15","name":"Chain 15","cat":"chain","swatch":"","available":true,"tracked":false,"order":15,"thumb":{{ 'cyo-chain-15.webp' | asset_url | json }},"layer":null},
+{"id":"chain-16","name":"Chain 16","cat":"chain","swatch":"","available":true,"tracked":false,"order":16,"thumb":{{ 'cyo-chain-16.webp' | asset_url | json }},"layer":null},
+{"id":"chain-17","name":"Chain 17","cat":"chain","swatch":"","available":true,"tracked":false,"order":17,"thumb":{{ 'cyo-chain-17.webp' | asset_url | json }},"layer":null},
+{"id":"chain-18","name":"Chain 18","cat":"chain","swatch":"","available":true,"tracked":false,"order":18,"thumb":{{ 'cyo-chain-18.webp' | asset_url | json }},"layer":null},
+{"id":"chain-19","name":"Chain 19","cat":"chain","swatch":"","available":true,"tracked":false,"order":19,"thumb":{{ 'cyo-chain-19.webp' | asset_url | json }},"layer":null},
+{"id":"anklet-01","name":"Anklet 01","cat":"anklet","swatch":"","available":true,"tracked":false,"order":1,"thumb":{{ 'cyo-anklet-01.webp' | asset_url | json }},"layer":null},
+{"id":"anklet-02","name":"Anklet 02","cat":"anklet","swatch":"","available":true,"tracked":false,"order":2,"thumb":{{ 'cyo-anklet-02.webp' | asset_url | json }},"layer":null},
+{"id":"anklet-03","name":"Anklet 03","cat":"anklet","swatch":"","available":true,"tracked":false,"order":3,"thumb":{{ 'cyo-anklet-03.webp' | asset_url | json }},"layer":null},
+{"id":"anklet-04","name":"Anklet 04","cat":"anklet","swatch":"","available":true,"tracked":false,"order":4,"thumb":{{ 'cyo-anklet-04.webp' | asset_url | json }},"layer":null},
+{"id":"anklet-05","name":"Anklet 05","cat":"anklet","swatch":"","available":true,"tracked":false,"order":5,"thumb":{{ 'cyo-anklet-05.webp' | asset_url | json }},"layer":null},
+{"id":"anklet-06","name":"Anklet 06","cat":"anklet","swatch":"","available":true,"tracked":false,"order":6,"thumb":{{ 'cyo-anklet-06.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-01","name":"Bracelet 01","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":1,"thumb":{{ 'cyo-bracelet-01.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-02","name":"Bracelet 02","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":2,"thumb":{{ 'cyo-bracelet-02.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-03","name":"Bracelet 03","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":3,"thumb":{{ 'cyo-bracelet-03.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-04","name":"Bracelet 04","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":4,"thumb":{{ 'cyo-bracelet-04.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-05","name":"Bracelet 05","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":5,"thumb":{{ 'cyo-bracelet-05.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-06","name":"Bracelet 06","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":6,"thumb":{{ 'cyo-bracelet-06.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-07","name":"Bracelet 07","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":7,"thumb":{{ 'cyo-bracelet-07.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-08","name":"Bracelet 08","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":8,"thumb":{{ 'cyo-bracelet-08.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-09","name":"Bracelet 09","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":9,"thumb":{{ 'cyo-bracelet-09.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-10","name":"Bracelet 10","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":10,"thumb":{{ 'cyo-bracelet-10.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-11","name":"Bracelet 11","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":11,"thumb":{{ 'cyo-bracelet-11.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-12","name":"Bracelet 12","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":12,"thumb":{{ 'cyo-bracelet-12.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-13","name":"Bracelet 13","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":13,"thumb":{{ 'cyo-bracelet-13.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-14","name":"Bracelet 14","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":14,"thumb":{{ 'cyo-bracelet-14.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-15","name":"Bracelet 15","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":15,"thumb":{{ 'cyo-bracelet-15.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-16","name":"Bracelet 16","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":16,"thumb":{{ 'cyo-bracelet-16.webp' | asset_url | json }},"layer":null},
+{"id":"bracelet-17","name":"Bracelet 17","cat":"bracelet","swatch":"","available":true,"tracked":false,"order":17,"thumb":{{ 'cyo-bracelet-17.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-01","name":"Earrings 01","cat":"earrings","swatch":"","available":true,"tracked":false,"order":1,"thumb":{{ 'cyo-earrings-01.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-02","name":"Earrings 02","cat":"earrings","swatch":"","available":true,"tracked":false,"order":2,"thumb":{{ 'cyo-earrings-02.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-03","name":"Earrings 03","cat":"earrings","swatch":"","available":true,"tracked":false,"order":3,"thumb":{{ 'cyo-earrings-03.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-04","name":"Earrings 04","cat":"earrings","swatch":"","available":true,"tracked":false,"order":4,"thumb":{{ 'cyo-earrings-04.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-05","name":"Earrings 05","cat":"earrings","swatch":"","available":true,"tracked":false,"order":5,"thumb":{{ 'cyo-earrings-05.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-06","name":"Earrings 06","cat":"earrings","swatch":"","available":true,"tracked":false,"order":6,"thumb":{{ 'cyo-earrings-06.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-07","name":"Earrings 07","cat":"earrings","swatch":"","available":true,"tracked":false,"order":7,"thumb":{{ 'cyo-earrings-07.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-08","name":"Earrings 08","cat":"earrings","swatch":"","available":true,"tracked":false,"order":8,"thumb":{{ 'cyo-earrings-08.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-09","name":"Earrings 09","cat":"earrings","swatch":"","available":true,"tracked":false,"order":9,"thumb":{{ 'cyo-earrings-09.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-10","name":"Earrings 10","cat":"earrings","swatch":"","available":true,"tracked":false,"order":10,"thumb":{{ 'cyo-earrings-10.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-11","name":"Earrings 11","cat":"earrings","swatch":"","available":true,"tracked":false,"order":11,"thumb":{{ 'cyo-earrings-11.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-12","name":"Earrings 12","cat":"earrings","swatch":"","available":true,"tracked":false,"order":12,"thumb":{{ 'cyo-earrings-12.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-13","name":"Earrings 13","cat":"earrings","swatch":"","available":true,"tracked":false,"order":13,"thumb":{{ 'cyo-earrings-13.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-14","name":"Earrings 14","cat":"earrings","swatch":"","available":true,"tracked":false,"order":14,"thumb":{{ 'cyo-earrings-14.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-15","name":"Earrings 15","cat":"earrings","swatch":"","available":true,"tracked":false,"order":15,"thumb":{{ 'cyo-earrings-15.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-16","name":"Earrings 16","cat":"earrings","swatch":"","available":true,"tracked":false,"order":16,"thumb":{{ 'cyo-earrings-16.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-17","name":"Earrings 17","cat":"earrings","swatch":"","available":true,"tracked":false,"order":17,"thumb":{{ 'cyo-earrings-17.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-18","name":"Earrings 18","cat":"earrings","swatch":"","available":true,"tracked":false,"order":18,"thumb":{{ 'cyo-earrings-18.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-19","name":"Earrings 19","cat":"earrings","swatch":"","available":true,"tracked":false,"order":19,"thumb":{{ 'cyo-earrings-19.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-20","name":"Earrings 20","cat":"earrings","swatch":"","available":true,"tracked":false,"order":20,"thumb":{{ 'cyo-earrings-20.webp' | asset_url | json }},"layer":null},
+{"id":"earrings-21","name":"Earrings 21","cat":"earrings","swatch":"","available":true,"tracked":false,"order":21,"thumb":{{ 'cyo-earrings-21.webp' | asset_url | json }},"layer":null},
+{"id":"scrunchie-01","name":"Orange","cat":"scrunchie","swatch":"#efad7f","available":true,"tracked":false,"order":1,"thumb":{{ 'cyo-scrunchie-01.webp' | asset_url | json }},"layer":null},
+{"id":"scrunchie-02","name":"Yellow","cat":"scrunchie","swatch":"#f3ce4d","available":true,"tracked":false,"order":2,"thumb":{{ 'cyo-scrunchie-02.webp' | asset_url | json }},"layer":null},
+{"id":"scrunchie-03","name":"Lavender","cat":"scrunchie","swatch":"#c0a8d0","available":true,"tracked":false,"order":3,"thumb":{{ 'cyo-scrunchie-03.webp' | asset_url | json }},"layer":null},
+{"id":"scrunchie-04","name":"Sage green","cat":"scrunchie","swatch":"#c8caa6","available":true,"tracked":false,"order":4,"thumb":{{ 'cyo-scrunchie-04.webp' | asset_url | json }},"layer":null},
+{"id":"scrunchie-05","name":"Blue","cat":"scrunchie","swatch":"#8ca9c7","available":true,"tracked":false,"order":5,"thumb":{{ 'cyo-scrunchie-05.webp' | asset_url | json }},"layer":null},
+{"id":"scrunchie-06","name":"Charcoal","cat":"scrunchie","swatch":"#5f6c6e","available":true,"tracked":false,"order":6,"thumb":{{ 'cyo-scrunchie-06.webp' | asset_url | json }},"layer":null},
+{"id":"ring-01","name":"Ring 01","cat":"ring","swatch":"","available":true,"tracked":false,"order":1,"thumb":{{ 'cyo-ring-01.webp' | asset_url | json }},"layer":null},
+{"id":"ring-02","name":"Ring 02","cat":"ring","swatch":"","available":true,"tracked":false,"order":2,"thumb":{{ 'cyo-ring-02.webp' | asset_url | json }},"layer":null},
+{"id":"ring-03","name":"Ring 03","cat":"ring","swatch":"","available":true,"tracked":false,"order":3,"thumb":{{ 'cyo-ring-03.webp' | asset_url | json }},"layer":null},
+{"id":"ring-04","name":"Ring 04","cat":"ring","swatch":"","available":true,"tracked":false,"order":4,"thumb":{{ 'cyo-ring-04.webp' | asset_url | json }},"layer":null},
+{"id":"ring-05","name":"Ring 05","cat":"ring","swatch":"","available":true,"tracked":false,"order":5,"thumb":{{ 'cyo-ring-05.webp' | asset_url | json }},"layer":null},
+{"id":"ring-06","name":"Ring 06","cat":"ring","swatch":"","available":true,"tracked":false,"order":6,"thumb":{{ 'cyo-ring-06.webp' | asset_url | json }},"layer":null},
+{"id":"ring-07","name":"Ring 07","cat":"ring","swatch":"","available":true,"tracked":false,"order":7,"thumb":{{ 'cyo-ring-07.webp' | asset_url | json }},"layer":null},
+{"id":"ring-08","name":"Ring 08","cat":"ring","swatch":"","available":true,"tracked":false,"order":8,"thumb":{{ 'cyo-ring-08.webp' | asset_url | json }},"layer":null},
+{"id":"ring-09","name":"Ring 09","cat":"ring","swatch":"","available":true,"tracked":false,"order":9,"thumb":{{ 'cyo-ring-09.webp' | asset_url | json }},"layer":null},
+{"id":"ring-10","name":"Ring 10","cat":"ring","swatch":"","available":true,"tracked":false,"order":10,"thumb":{{ 'cyo-ring-10.webp' | asset_url | json }},"layer":null},
+{"id":"ring-11","name":"Ring 11","cat":"ring","swatch":"","available":true,"tracked":false,"order":11,"thumb":{{ 'cyo-ring-11.webp' | asset_url | json }},"layer":null},
+{"id":"ring-12","name":"Ring 12","cat":"ring","swatch":"","available":true,"tracked":false,"order":12,"thumb":{{ 'cyo-ring-12.webp' | asset_url | json }},"layer":null},
+{"id":"ring-13","name":"Ring 13","cat":"ring","swatch":"","available":true,"tracked":false,"order":13,"thumb":{{ 'cyo-ring-13.webp' | asset_url | json }},"layer":null},
+{"id":"ring-14","name":"Ring 14","cat":"ring","swatch":"","available":true,"tracked":false,"order":14,"thumb":{{ 'cyo-ring-14.webp' | asset_url | json }},"layer":null},
+{"id":"hairclip-01","name":"Hair clip 01","cat":"hairclip","swatch":"","available":true,"tracked":false,"order":1,"thumb":{{ 'cyo-hairclip-01.webp' | asset_url | json }},"layer":null}
+{%- endcapture -%}
+{"source":"bundled","placeholder":{{ 'builder-placeholder.svg' | asset_url | json }},"boxes":[{{ boxes_json | strip_newlines }}],"categories":[],"designs":[{{ designs_json | strip_newlines }}]}

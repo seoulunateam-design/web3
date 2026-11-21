@@ -1,0 +1,57 @@
+<section class="shop-page" {{ section.shopify_attributes }}>
+  <header class="shop-head">
+    <h1>My account</h1>
+    <p class="shop-head__desc"><a class="link" href="{{ routes.account_logout_url }}">Sign out</a></p>
+  </header>
+
+  <div class="account-grid">
+    <div>
+      <h2 class="ov__sub">Order history</h2>
+      {%- paginate customer.orders by 10 -%}
+        {%- if customer.orders.size == 0 -%}
+          <p class="ov__empty">You haven't placed any orders yet.</p>
+        {%- else -%}
+          <table class="orders">
+            <thead><tr><th>Order</th><th>Date</th><th>Payment</th><th>Fulfilment</th><th>Total</th></tr></thead>
+            <tbody>
+              {%- for order in customer.orders -%}
+                <tr>
+                  <td><a class="link" href="{{ order.customer_url }}">{{ order.name }}</a></td>
+                  <td>{{ order.created_at | time_tag: format: 'date' }}</td>
+                  <td>{{ order.financial_status_label }}</td>
+                  <td>{{ order.fulfillment_status_label }}</td>
+                  <td>{{ order.total_price | money }}</td>
+                </tr>
+              {%- endfor -%}
+            </tbody>
+          </table>
+        {%- endif -%}
+        {%- if paginate.pages > 1 -%}
+          <nav class="pager" aria-label="Pagination">
+            {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}">&larr; Previous</a>{%- endif -%}
+            <span>Page {{ paginate.current_page }} of {{ paginate.pages }}</span>
+            {%- if paginate.next -%}<a href="{{ paginate.next.url }}">Next &rarr;</a>{%- endif -%}
+          </nav>
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+
+    <aside class="account-side">
+      <h2 class="ov__sub">Profile</h2>
+      <p>{{ customer.name }}<br>{{ customer.email }}</p>
+      <h2 class="ov__sub">Default address</h2>
+      {%- if customer.default_address -%}
+        <p>{{ customer.default_address | format_address }}</p>
+      {%- else -%}
+        <p>No address saved yet.</p>
+      {%- endif -%}
+      <a class="link" href="{{ routes.account_addresses_url }}">Manage addresses ({{ customer.addresses_count }})</a>
+    </aside>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Account"
+}
+{% endschema %}

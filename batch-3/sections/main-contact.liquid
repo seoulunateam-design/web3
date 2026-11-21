@@ -1,0 +1,68 @@
+{%- comment -%}
+  Contact support page. The form is Shopify's contact form: the message is emailed to the store.
+  Email, phone and hours are only shown when you fill them in, so nothing invented is published.
+{%- endcomment -%}
+<div class="sp" {{ section.shopify_attributes }}>
+  <div class="sp__head">
+    <p class="sp__kicker">{{ section.settings.kicker }}</p>
+    <h1>{{ page.title }}</h1>
+    {%- if section.settings.lede != blank -%}<p class="sp__lede">{{ section.settings.lede }}</p>{%- endif -%}
+  </div>
+  <div class="sp__grid sp__grid--contact">
+    <aside class="sp__side" aria-label="{{ 'general.customer_care' | t }}">
+      {%- for link in linklists[section.settings.menu].links -%}
+        <a href="{{ link.url }}"{% if link.active %} class="on" aria-current="page"{% endif %}>{{ link.title }}</a>
+      {%- endfor -%}
+    </aside>
+    <div class="sp__body">
+      {%- if section.settings.email != blank or section.settings.phone != blank or section.settings.hours != blank -%}
+        <div class="cs-cards">
+          {%- if section.settings.email != blank -%}<div class="cs-card"><small>EMAIL</small><a href="mailto:{{ section.settings.email }}">{{ section.settings.email }}</a></div>{%- endif -%}
+          {%- if section.settings.phone != blank -%}<div class="cs-card"><small>PHONE</small><a href="tel:{{ section.settings.phone | replace: ' ', '' }}">{{ section.settings.phone }}</a></div>{%- endif -%}
+          {%- if section.settings.hours != blank -%}<div class="cs-card"><small>HOURS</small><b>{{ section.settings.hours }}</b></div>{%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- form 'contact', id: 'ContactSupportForm', class: 'cs-form' -%}
+        <h2>{{ section.settings.form_heading }}</h2>
+        {%- if form.posted_successfully? -%}
+          <p class="cs-note cs-note--ok" role="status">{{ section.settings.sent_text }}</p>
+        {%- else -%}
+          {%- if form.errors -%}<p class="cs-note cs-note--bad" role="alert">{{ form.errors | default_errors }}</p>{%- endif -%}
+          <div class="cs-row">
+            <label>NAME<input name="contact[name]" type="text" maxlength="60" autocomplete="name" required value="{{ form.name }}"></label>
+            <label>EMAIL<input name="contact[email]" type="email" maxlength="80" autocomplete="email" required value="{{ form.email }}"></label>
+          </div>
+          <div class="cs-row">
+            <label>ORDER NUMBER <small>(if you have one)</small><input name="contact[Order number]" type="text" maxlength="30"></label>
+            <label>TOPIC
+              <select name="contact[Topic]">
+                <option>Order status</option><option>Shipping &amp; delivery</option><option>Return or refund</option><option>Cancel an order</option><option>Product question</option><option>Something else</option>
+              </select>
+            </label>
+          </div>
+          <label>MESSAGE<textarea name="contact[body]" rows="5" maxlength="1000" required>{{ form.body }}</textarea></label>
+          <button class="btn btn--plum" type="submit">SEND MESSAGE</button>
+        {%- endif -%}
+      {%- endform -%}
+
+      {%- if page.content != blank -%}<div class="rte" style="margin-top:28px">{{ page.content }}</div>{%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contact support",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Small heading", "default": "WE'RE HERE TO HELP" },
+    { "type": "text", "id": "lede", "label": "Intro line", "default": "Questions about an order, delivery or a product? Send us a message." },
+    { "type": "text", "id": "email", "label": "Support email", "info": "Shown on the page. Leave empty to hide." },
+    { "type": "text", "id": "phone", "label": "Support phone", "info": "Leave empty to hide." },
+    { "type": "text", "id": "hours", "label": "Support hours", "info": "Leave empty to hide." },
+    { "type": "text", "id": "form_heading", "label": "Form heading", "default": "Send us a message" },
+    { "type": "text", "id": "sent_text", "label": "Text after sending", "default": "Message sent. We'll get back to you soon." },
+    { "type": "link_list", "id": "menu", "label": "Customer care menu", "default": "footer" }
+  ]
+}
+{% endschema %}

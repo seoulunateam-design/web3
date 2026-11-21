@@ -1,0 +1,18 @@
+<section class="shop-page auth-page" {{ section.shopify_attributes }}>
+  <div class="auth-card">
+    <h1>Activate account</h1>
+    {%- form 'activate_customer_password' -%}
+      {%- if form.errors -%}<p class="form-err" role="alert">{{ form.errors | default_errors }}</p>{%- endif -%}
+      <label>PASSWORD<input type="password" name="customer[password]" autocomplete="new-password" required></label>
+      <label>CONFIRM PASSWORD<input type="password" name="customer[password_confirmation]" autocomplete="new-password" required></label>
+      <button class="btn btn--plum btn--block" type="submit">ACTIVATE ACCOUNT</button>
+      <button class="link link--center" type="submit" name="decline">Decline invitation</button>
+    {%- endform -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Activate account"
+}
+{% endschema %}

@@ -1,0 +1,29 @@
+{% layout none %}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gift card &ndash; {{ shop.name }}</title>
+  <meta name="robots" content="noindex">
+  <style>
+    :root { --plum: {{ settings.color_plum }}; --gold: {{ settings.color_gold }}; --cream: {{ settings.color_cream }}; --lav: {{ settings.color_lavender }}; }
+    body { margin: 0; font-family: system-ui, sans-serif; background: var(--cream); color: var(--plum); display: grid; place-items: center; min-height: 100vh; text-align: center; }
+    .gc { background: #fff; border: 1px solid var(--gold); border-radius: 24px; padding: 40px; max-width: 420px; }
+    .gc__code { font-size: 22px; letter-spacing: 3px; background: var(--lav); padding: 12px 18px; border-radius: 12px; display: inline-block; margin: 14px 0; }
+    a.btn { display: inline-block; background: var(--plum); color: var(--cream); padding: 12px 28px; border-radius: 99px; text-decoration: none; margin-top: 12px; }
+  </style>
+  {{ content_for_header }}
+</head>
+<body>
+  <main class="gc">
+    <h1>{{ shop.name }} gift card</h1>
+    <p>{{ gift_card.initial_value | money }}{% if gift_card.balance != gift_card.initial_value %} &middot; balance {{ gift_card.balance | money }}{% endif %}</p>
+    <div class="gc__code">{{ gift_card.code | format_code }}</div>
+    {% if gift_card.expired %}<p>This gift card expired on {{ gift_card.expires_on | date: '%d %B %Y' }}.</p>{% endif %}
+    {% unless gift_card.enabled %}<p>This gift card has been disabled.</p>{% endunless %}
+    <p>Enter this code at checkout to use it.</p>
+    <a class="btn" href="{{ shop.url }}">Start shopping</a>
+  </main>
+</body>
+</html>

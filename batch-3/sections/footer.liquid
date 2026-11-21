@@ -1,0 +1,95 @@
+{%- comment -%}
+  Footer. The home page gets the full footer with the newsletter sign-up and the "customer care" bar;
+  every other page gets the compact footer. Links come from the Shopify menus you choose below.
+{%- endcomment -%}
+{%- if template.name == 'index' -%}
+  <footer class="footer">
+    <div class="footer__col">
+      <svg class="footer__logo" aria-hidden="true"><use href="#logo"/></svg>
+      {%- if section.settings.text != blank -%}<p>{{ section.settings.text }}</p>{%- endif -%}
+      {%- render 'footer-contact', section: section -%}
+    </div>
+    <div class="footer__col footer__seal">
+      <div class="seal"><svg aria-hidden="true"><use href="#logo"/></svg></div>
+    </div>
+    <div class="footer__col">
+      {%- if section.settings.show_newsletter -%}
+        <h4>{{ section.settings.newsletter_heading }}</h4>
+        {%- form 'customer', class: 'sub', id: 'footerNewsletter' -%}
+          {%- if form.errors -%}<p class="form-err" role="alert">{{ form.errors | default_errors }}</p>{%- endif -%}
+          {%- if form.posted_successfully? -%}
+            <p class="form-ok" role="status">{{ section.settings.newsletter_thanks }}</p>
+          {%- else -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <input type="email" name="contact[email]" placeholder="ENTER YOUR EMAIL..." autocomplete="email" required aria-label="{{ 'general.email' | t }}">
+            <button type="submit" aria-label="{{ 'general.subscribe' | t }}">&rarr;</button>
+          {%- endif -%}
+        {%- endform -%}
+        {%- if section.settings.newsletter_text != blank -%}<small>{{ section.settings.newsletter_text }}</small>{%- endif -%}
+      {%- endif -%}
+    </div>
+    <div class="footer__big" aria-hidden="true">{{ shop.name | upcase }}</div>
+  </footer>
+
+  <nav class="legal" aria-label="{{ 'general.customer_care' | t }}">
+    {%- for link in linklists[section.settings.menu].links -%}
+      <a href="{{ link.url }}">{{ link.title }}</a>
+    {%- endfor -%}
+    {%- for policy in shop.policies -%}
+      {%- if policy.body != blank -%}<a href="{{ policy.url }}">{{ policy.title }}</a>{%- endif -%}
+    {%- endfor -%}
+  </nav>
+{%- else -%}
+  <footer class="sfoot">
+    <div class="sfoot__brand">
+      <svg class="footer__logo" aria-hidden="true"><use href="#logo"/></svg>
+      {%- if section.settings.text != blank -%}<p>{{ section.settings.text }}</p>{%- endif -%}
+      {%- render 'footer-contact', section: section -%}
+    </div>
+    <div>
+      <h4>{{ 'general.shop' | t }}</h4>
+      <a href="{{ routes.collections_url }}">{{ 'general.all_collections' | t }}</a>
+      {%- assign shown = 0 -%}
+      {%- for c in collections -%}
+        {%- if shown < 4 and c.products_count > 0 and c.handle != 'frontpage' -%}
+          <a href="{{ c.url }}">{{ c.title }}</a>
+          {%- assign shown = shown | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+    <div>
+      <h4>{{ 'general.customer_care' | t }}</h4>
+      {%- for link in linklists[section.settings.menu].links -%}
+        <a href="{{ link.url }}">{{ link.title }}</a>
+      {%- endfor -%}
+      {%- for policy in shop.policies -%}
+        {%- if policy.body != blank -%}<a href="{{ policy.url }}">{{ policy.title }}</a>{%- endif -%}
+      {%- endfor -%}
+    </div>
+    <p class="sfoot__copy">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ 'general.rights' | t }}</p>
+  </footer>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Customer care menu", "default": "footer", "info": "Policies written in Settings > Policies are added automatically." },
+    { "type": "text", "id": "text", "label": "Brand line", "default": "A Little Seoul, A Lot of You. Make them look twice." },
+    { "type": "checkbox", "id": "show_newsletter", "label": "Show newsletter sign-up (home page)", "default": true },
+    { "type": "text", "id": "newsletter_heading", "label": "Newsletter heading", "default": "SUBSCRIBE" },
+    { "type": "text", "id": "newsletter_text", "label": "Newsletter text", "default": "Join the club! Subscribe to our newsletter for exclusive updates and offers!" },
+    { "type": "text", "id": "newsletter_thanks", "label": "Text after subscribing", "default": "Thanks for subscribing!" },
+    { "type": "header", "content": "Contact (shown only when filled in)" },
+    { "type": "text", "id": "contact_email", "label": "Email" },
+    { "type": "text", "id": "contact_phone", "label": "Phone / WhatsApp" },
+    { "type": "text", "id": "contact_hours", "label": "Support hours" },
+    { "type": "header", "content": "Social links (shown only when filled in)" },
+    { "type": "url", "id": "instagram_url", "label": "Instagram" },
+    { "type": "url", "id": "facebook_url", "label": "Facebook" },
+    { "type": "url", "id": "pinterest_url", "label": "Pinterest" },
+    { "type": "url", "id": "youtube_url", "label": "YouTube" },
+    { "type": "url", "id": "tiktok_url", "label": "TikTok" }
+  ]
+}
+{% endschema %}

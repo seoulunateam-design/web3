@@ -1,0 +1,59 @@
+<section class="shop-page" {{ section.shopify_attributes }}>
+  <header class="shop-head">
+    <h1>Order {{ order.name }}</h1>
+    <p class="shop-head__desc">
+      Placed {{ order.created_at | time_tag: format: 'date' }} ·
+      Payment: {{ order.financial_status_label }} ·
+      Fulfilment: {{ order.fulfillment_status_label }}
+    </p>
+    <p class="shop-head__desc"><a class="link" href="{{ routes.account_url }}">&larr; Back to account</a></p>
+  </header>
+
+  {%- if order.cancelled -%}
+    <div class="notice">This order was cancelled on {{ order.cancelled_at | time_tag: format: 'date' }}{% if order.cancel_reason_label != blank %} ({{ order.cancel_reason_label }}){% endif %}.</div>
+  {%- endif -%}
+
+  <div class="account-grid">
+    <div>
+      <div class="lines">
+        {%- for line in order.line_items -%}
+          <div class="line">
+            {%- if line.image -%}{{ line.image | image_url: width: 160 | image_tag: width: 76, height: 76, alt: line.title, loading: 'lazy' }}{%- else -%}<span></span>{%- endif -%}
+            <div>
+              <b>{{ line.title }}</b>
+              {%- if line.variant.title and line.variant.title != 'Default Title' -%}<small>{{ line.variant.title }}</small>{%- endif -%}
+              <small>Qty {{ line.quantity }} · {{ line.final_price | money }} each</small>
+              {%- if line.fulfillment -%}
+                <small>Shipped {{ line.fulfillment.created_at | time_tag: format: 'date' }}
+                  {%- if line.fulfillment.tracking_number != blank %} ·
+                    {% if line.fulfillment.tracking_url != blank %}<a class="link" href="{{ line.fulfillment.tracking_url }}" target="_blank" rel="noopener">Track {{ line.fulfillment.tracking_company }} {{ line.fulfillment.tracking_number }}</a>{% else %}{{ line.fulfillment.tracking_company }} {{ line.fulfillment.tracking_number }}{% endif %}
+                  {%- endif -%}
+                </small>
+              {%- endif -%}
+            </div>
+            <div class="line__r"><b>{{ line.final_line_price | money }}</b></div>
+          </div>
+        {%- endfor -%}
+      </div>
+      <div class="tot">
+        <div><span>Subtotal</span><b>{{ order.line_items_subtotal_price | money }}</b></div>
+        {%- for discount in order.cart_level_discount_applications -%}<div><span>{{ discount.title }}</span><b>-{{ discount.total_allocated_amount | money }}</b></div>{%- endfor -%}
+        {%- for shipping_method in order.shipping_methods -%}<div><span>Shipping ({{ shipping_method.title }})</span><b>{{ shipping_method.price | money }}</b></div>{%- endfor -%}
+        {%- for tax_line in order.tax_lines -%}<div><span>{{ tax_line.title }}</span><b>{{ tax_line.price | money }}</b></div>{%- endfor -%}
+        <div class="tot__final"><span>Total</span><b>{{ order.total_price | money }}</b></div>
+      </div>
+    </div>
+    <aside class="account-side">
+      <h2 class="ov__sub">Delivery address</h2>
+      <p>{{ order.shipping_address | format_address }}</p>
+      <h2 class="ov__sub">Billing address</h2>
+      <p>{{ order.billing_address | format_address }}</p>
+    </aside>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Order"
+}
+{% endschema %}

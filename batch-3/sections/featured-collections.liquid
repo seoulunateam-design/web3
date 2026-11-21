@@ -1,0 +1,77 @@
+{%- comment -%}
+  Collection browser: tabs and a 3-up carousel (built by assets/home.js from the collection data the hero prints).
+  The links below are the same collections for visitors without JavaScript and for search engines.
+{%- endcomment -%}
+{%- capture handles -%}
+  {%- for block in section.blocks -%}
+    {%- if block.settings.collection != blank -%}{{- block.settings.collection.handle -}},{%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+{%- capture handles -%}{%- render 'valid-handles', handles: handles -%}{%- endcapture -%}
+{%- if handles == blank -%}
+  {%- capture handles -%}{%- render 'collection-handles' -%}{%- endcapture -%}
+{%- endif -%}
+{%- assign handle_list = handles | split: ',' -%}
+
+{%- if handle_list.size == 0 -%}
+  {%- if request.design_mode -%}<section class="menu" id="menu" {{ section.shopify_attributes }}><p class="editor-hint" style="text-align:center">Create a collection that contains products to fill this section.</p></section>{%- endif -%}
+{%- else -%}
+<section class="menu" id="menu" {{ section.shopify_attributes }}>
+  <svg class="spark ms ms1" aria-hidden="true"><use href="#spark"/></svg>
+  <svg class="spark ms ms2" aria-hidden="true"><use href="#crescent"/></svg>
+  <svg class="spark ms ms3" aria-hidden="true"><use href="#spark"/></svg>
+  <svg class="spark ms ms4" aria-hidden="true"><use href="#spark"/></svg>
+  <svg class="spark ms ms5" aria-hidden="true"><use href="#crescent"/></svg>
+  <svg class="spark ms ms6" aria-hidden="true"><use href="#spark"/></svg>
+  <svg class="spark ms ms7" aria-hidden="true"><use href="#spark"/></svg>
+  <div class="menu__head" data-reveal>
+    <h2>{{ section.settings.heading }} <em>{{ section.settings.accent }}</em></h2>
+    <p id="tag">{{ collections[handle_list[0]].metafields.custom.tagline.value }}</p>
+    <p class="menu__from" id="from">{{ section.settings.subheading }}</p>
+  </div>
+
+  <div class="tabs" id="tabs" data-reveal>
+    {%- for handle in handle_list -%}
+      {%- assign col = collections[handle] -%}
+      <button type="button" class="{% if forloop.first %}active{% endif %}" data-tab="{{ handle | escape }}">{{ col.title | upcase }}</button>
+    {%- endfor -%}
+  </div>
+
+  <div class="carousel" data-reveal>
+    <button class="arrow" id="prev" type="button" aria-label="{{ 'collections.previous' | t }}">&#8249;</button>
+    <div class="cards" id="cards"></div>
+    <button class="arrow" id="next" type="button" aria-label="{{ 'collections.next' | t }}">&#8250;</button>
+  </div>
+
+  <noscript>
+    <ul class="menu__fallback">
+      {%- for handle in handle_list -%}
+        {%- assign col = collections[handle] -%}
+        <li><a href="{{ col.url }}">{{ col.title }}</a></li>
+      {%- endfor -%}
+    </ul>
+  </noscript>
+</section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Collection browser",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "FIND YOUR" },
+    { "type": "text", "id": "accent", "label": "Heading accent (italic)", "default": "SEOUL." },
+    { "type": "text", "id": "subheading", "label": "Line under the tagline", "default": "", "info": "Optional, e.g. '3 collections · each with 6 accessories + 1 pouch'." }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [{ "name": "Collection browser" }]
+}
+{% endschema %}
