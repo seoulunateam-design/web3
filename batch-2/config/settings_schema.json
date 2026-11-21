@@ -1,0 +1,37 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "SEOULUNA",
+    "theme_version": "2.0.1",
+    "theme_author": "SEOULUNA",
+    "theme_documentation_url": "https://shopify.dev/docs/themes",
+    "theme_support_url": "https://help.shopify.com/"
+  },
+  {
+    "name": "Colours",
+    "settings": [
+      { "type": "color", "id": "color_lavender", "label": "Soft Lavender", "default": "#EADCF5" },
+      { "type": "color", "id": "color_blush", "label": "Blush Pink", "default": "#F8E7EF" },
+      { "type": "color", "id": "color_plum", "label": "Deep Plum", "default": "#51334F" },
+      { "type": "color", "id": "color_cream", "label": "Pearl Cream", "default": "#FFF9F5" },
+      { "type": "color", "id": "color_gold", "label": "Champagne Gold", "default": "#C6A36B" },
+      { "type": "color", "id": "color_ink", "label": "Midnight Black", "default": "#29232B" }
+    ]
+  },
+  {
+    "name": "Brand",
+    "settings": [
+      { "type": "image_picker", "id": "logo", "label": "Logo mark (square)", "info": "Optional. Leave empty to use the built-in crescent mark." },
+      { "type": "image_picker", "id": "favicon", "label": "Favicon (square, at least 64 px)", "info": "Optional. Leave empty to use the built-in crescent icon." },
+      { "type": "image_picker", "id": "share_image", "label": "Social sharing image", "info": "Shown when pages without their own image are shared. 1200 x 630 px works best." }
+    ]
+  },
+  {
+    "name": "Behaviour",
+    "settings": [
+      { "type": "checkbox", "id": "show_loader", "label": "Show branded loading screen on the home page", "default": true },
+      { "type": "checkbox", "id": "enable_cursor", "label": "Custom cursor ring (desktop with a mouse)", "default": true },
+      { "type": "checkbox", "id": "scale_large_screens", "label": "Scale the 1200 px design up on large screens", "default": true }
+    ]
+  }
+]

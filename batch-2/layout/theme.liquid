@@ -1,0 +1,170 @@
+{%- liquid
+  assign world_source = ''
+  if template.name == 'product'
+    assign world_source = product.handle | append: ' ' | append: product.title
+    for c in product.collections
+      assign world_source = world_source | append: ' ' | append: c.handle
+    endfor
+  elsif template.name == 'collection'
+    assign world_source = collection.handle | append: ' ' | append: collection.title
+  endif
+  capture page_world
+    render 'world-key', source: world_source
+  endcapture
+  assign page_world = page_world | strip
+  assign checkout_url = routes.root_url | append: '/checkout' | replace: '//checkout', '/checkout'
+  assign og_image = settings.share_image
+  if template.name == 'product' and product.featured_image
+    assign og_image = product.featured_image
+  elsif template.name == 'collection' and collection.image
+    assign og_image = collection.image
+  endif
+-%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}"{% if page_world != blank %} data-world="{{ page_world }}"{% endif %}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_plum }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+  {%- if settings.favicon != blank -%}
+    <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 64, height: 64 }}">
+  {%- else -%}
+    <link rel="icon" type="image/png" href="{{ 'mascot-logo.png' | asset_url }}">
+  {%- endif -%}
+
+  <title>
+    {{- page_title -}}
+    {%- if current_tags %} &ndash; {{ 'general.tagged' | t }} "{{ current_tags | join: ', ' }}"{% endif -%}
+    {%- if current_page != 1 %} &ndash; {{ 'general.page' | t }} {{ current_page }}{% endif -%}
+    {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+  </title>
+
+  {%- assign description = page_description | default: shop.description -%}
+  {%- if description != blank -%}<meta name="description" content="{{ description | strip_html | truncate: 300 | escape }}">{%- endif -%}
+
+  <meta property="og:site_name" content="{{ shop.name }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:title" content="{{ page_title | escape }}">
+  <meta property="og:type" content="{% if template.name == 'product' %}product{% else %}website{% endif %}">
+  {%- if description != blank -%}<meta property="og:description" content="{{ description | strip_html | truncate: 300 | escape }}">{%- endif -%}
+  {%- if og_image -%}
+    <meta property="og:image" content="https:{{ og_image | image_url: width: 1200 }}">
+    <meta property="og:image:alt" content="{{ og_image.alt | default: page_title | escape }}">
+  {%- endif -%}
+  <meta name="twitter:card" content="{% if og_image %}summary_large_image{% else %}summary{% endif %}">
+
+  {% render 'fonts' %}
+
+  <style>
+    :root {
+      --lav: {{ settings.color_lavender }};
+      --blush: {{ settings.color_blush }};
+      --plum: {{ settings.color_plum }};
+      --cream: {{ settings.color_cream }};
+      --gold: {{ settings.color_gold }};
+      --ink: {{ settings.color_ink }};
+      --mascot: url({{ 'mascot.png' | asset_url }});
+    }
+  </style>
+  {{ 'theme.css' | asset_url | stylesheet_tag }}
+  {{ 'upgrade.css' | asset_url | stylesheet_tag }}
+  {%- if template.name == 'page' and template.suffix contains '-your-own-box' -%}
+    {{ 'builder.css' | asset_url | stylesheet_tag }}
+  {%- endif -%}
+
+  <script>
+    document.documentElement.classList.add('js');
+    window.theme = {
+      moneyFormat: {{ shop.money_format | json }},
+      routes: {
+        root: {{ routes.root_url | json }},
+        cart: {{ routes.cart_url | json }},
+        cartAdd: {{ routes.cart_add_url | json }},
+        cartChange: {{ routes.cart_change_url | json }},
+        cartJs: {{ routes.cart_url | append: '.js' | json }},
+        checkout: {{ checkout_url | json }},
+        collections: {{ routes.collections_url | json }}
+      },
+      mascots: [{{ 'mascot.png' | asset_url | json }}, {{ 'mascot-2.png' | asset_url | json }}, {{ 'mascot-3.png' | asset_url | json }}],
+      mascotLogos: [{{ 'mascot-logo.png' | asset_url | json }}, {{ 'mascot-logo-2.png' | asset_url | json }}, {{ 'mascot-logo-3.png' | asset_url | json }}],
+      settings: {
+        loader: {{ settings.show_loader | json }},
+        cursor: {{ settings.enable_cursor | json }},
+        scaleLarge: {{ settings.scale_large_screens | json }}
+      },
+      strings: {
+        added: {{ 'cart.added' | t | json }},
+        error: {{ 'cart.error' | t | json }},
+        soldOut: {{ 'product.sold_out' | t | json }},
+        addToCart: {{ 'product.add_to_cart' | t | json }},
+        inStock: {{ 'product.in_stock' | t | json }},
+        wishAdded: {{ 'general.wish_added' | t | json }},
+        wishRemoved: {{ 'general.wish_removed' | t | json }}
+      }
+    };
+  </script>
+
+  {%- if template.name == 'index' -%}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": {{ shop.name | json }},
+        "url": {{ shop.url | json }}{% if settings.logo %},
+        "logo": {{ settings.logo | image_url: width: 400 | prepend: 'https:' | json }}{% endif %}
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": {{ shop.name | json }},
+        "url": {{ shop.url | json }},
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "{{ shop.url }}{{ routes.search_url }}?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+  {%- endif -%}
+
+  {{ content_for_header }}
+</head>
+
+<body class="template-{{ template.name | handle }}{% unless template.name == 'index' %} subpage{% endunless %}">
+  <a class="skip-link" href="#main">{{ 'general.skip_to_content' | t }}</a>
+
+  {% render 'icons' %}
+
+  {% if settings.show_loader and template.name == 'index' %}
+    <div class="loader" id="loader" aria-hidden="true">
+      <div class="loader__mark"><svg><use href="#logo"/></svg></div>
+      <div class="loader__word">{{ shop.name | upcase }}</div>
+      <div class="loader__bar"><i></i></div>
+    </div>
+  {% endif %}
+
+  <div class="page">
+    {% section 'header' %}
+    <main id="main">
+      {{ content_for_layout }}
+    </main>
+    {% section 'footer' %}
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  {% section 'cart-drawer' %}
+
+  <script src="{{ 'theme.js' | asset_url }}" defer></script>
+  <script src="{{ 'upgrade.js' | asset_url }}" defer></script>
+  {%- if template.name == 'page' and template.suffix contains '-your-own-box' -%}
+    <script src="{{ 'builder.js' | asset_url }}" defer></script>
+  {%- endif -%}
+  {%- if template.name == 'index' -%}
+    <script src="{{ 'world.js' | asset_url }}" defer></script>
+    <script src="{{ 'home.js' | asset_url }}" defer></script>
+  {%- endif -%}
+</body>
+</html>

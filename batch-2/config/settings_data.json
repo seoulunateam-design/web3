@@ -1,0 +1,13 @@
+{
+  "current": {
+    "color_lavender": "#EADCF5",
+    "color_blush": "#F8E7EF",
+    "color_plum": "#51334F",
+    "color_cream": "#FFF9F5",
+    "color_gold": "#C6A36B",
+    "color_ink": "#29232B",
+    "show_loader": true,
+    "enable_cursor": true,
+    "scale_large_screens": true
+  }
+}
